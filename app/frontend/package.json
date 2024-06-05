@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@azure/storage-blob": "^12.13.0",
-    "@fluentui/react": "^8.110.7",
-    "@fluentui/react-icons": "^2.0.195",
+    "@fluentui/react": "^8.118.6",
+    "@fluentui/react-icons": "^2.0.242",
     "@react-spring/web": "^9.7.1",
     "classnames": "^2.3.1",
     "dompurify": "^3.0.1",

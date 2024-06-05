@@ -17,6 +17,7 @@ import { ChatResponse,
     ResubmitItemRequest,
     GetFeatureFlagsResponse,
     getMaxCSVFileSizeType,
+    DisclaimerText,
     } from "./models";
 
 export async function chatApi(options: ChatRequest, signal: AbortSignal): Promise<Response> {
@@ -462,6 +463,25 @@ export async function getApplicationTitle(): Promise<ApplicationTitle> {
     });
 
     const parsedResponse: ApplicationTitle = await response.json();
+    if (response.status > 299 || !response.ok) {
+        console.log(response);
+        throw Error(parsedResponse.error || "Unknown error");
+    }
+    console.log(parsedResponse);
+    return parsedResponse;
+}
+
+
+export async function getDisclaimerText(): Promise<DisclaimerText> {
+    console.log("fetch Disclaimer Text");
+    const response = await fetch("/getDisclaimerText", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    const parsedResponse: DisclaimerText = await response.json();
     if (response.status > 299 || !response.ok) {
         console.log(response);
         throw Error(parsedResponse.error || "Unknown error");
