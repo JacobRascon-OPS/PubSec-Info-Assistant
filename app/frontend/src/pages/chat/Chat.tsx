@@ -369,14 +369,14 @@ const Chat = () => {
                                 {activeChatMode == ChatMode.WorkOnly ?
                                     <div>
                                         <div className={styles.chatEmptyStateHeader}>
-                                            <BuildingMultipleFilled fontSize={"100px"} primaryFill={"rgba(27, 74, 239, 1)"} aria-hidden="true" aria-label="Chat with your Work Data logo" />
+                                            <BuildingMultipleFilled fontSize={"100px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="Chat with your Work Data logo" />
                                         </div>
                                         <h1 className={styles.chatEmptyStateTitle}>Chat with your work data</h1>
                                     </div>
                                     : activeChatMode == ChatMode.WorkPlusWeb ?
                                         <div>
                                             <div className={styles.chatEmptyStateHeader}>
-                                                <BuildingMultipleFilled fontSize={"80px"} primaryFill={"rgba(27, 74, 239, 1)"} aria-hidden="true" aria-label="Chat with your Work and Web Data logo" /><AddFilled fontSize={"50px"} primaryFill={"rgba(0, 0, 0, 0.7)"} aria-hidden="true" aria-label="" /><GlobeFilled fontSize={"80px"} primaryFill={"rgba(24, 141, 69, 1)"} aria-hidden="true" aria-label="" />
+                                                <BuildingMultipleFilled fontSize={"80px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="Chat with your Work and Web Data logo" /><AddFilled fontSize={"50px"} primaryFill={"rgba(0, 0, 0, 0.7)"} aria-hidden="true" aria-label="" /><GlobeFilled fontSize={"80px"} primaryFill={"rgba(24, 141, 69, 1)"} aria-hidden="true" aria-label="" />
                                             </div>
                                             <h1 className={styles.chatEmptyStateTitle}>Chat with your work and web data</h1>
                                         </div>
@@ -446,7 +446,7 @@ const Chat = () => {
                             {activeChatMode == ChatMode.WorkPlusWeb && (
                                 <div className={styles.chatInputWarningMessage}>
                                     {defaultApproach == Approaches.ReadRetrieveRead &&
-                                        <div>Questions will be answered by default from Work <BuildingMultipleFilled fontSize={"20px"} primaryFill={"rgba(27, 74, 239, 1)"} aria-hidden="true" aria-label="Work Data" /></div>}
+                                        <div>Questions will be answered by default from Work <BuildingMultipleFilled fontSize={"20px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="Work Data" /></div>}
                                     {defaultApproach == Approaches.ChatWebRetrieveRead &&
                                         <div>Questions will be answered by default from Web <GlobeFilled fontSize={"20px"} primaryFill={"rgba(24, 141, 69, 1)"} aria-hidden="true" aria-label="Web Data" /></div>
                                     }
@@ -493,7 +493,7 @@ const Chat = () => {
                                 <Label>Use this datasource to answer Questions by default:</Label>
                                 <div className={styles.defaultApproachSwitch}>
                                     <div className={styles.defaultApproachWebOption} onClick={handleToggle}>Web</div>
-                                    <Switch onChange={handleToggle} checked={defaultApproach == Approaches.ReadRetrieveRead} uncheckedIcon={true} checkedIcon={true} onColor="#1B4AEF" offColor="#188d45" />
+                                    <Switch onChange={handleToggle} checked={defaultApproach == Approaches.ReadRetrieveRead} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#188d45" />
                                     <div className={styles.defaultApproachWorkOption} onClick={handleToggle}>Work</div>
                                 </div>
                             </div>
