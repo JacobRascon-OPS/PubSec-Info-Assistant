@@ -304,7 +304,7 @@ const handleCloseEvent = () => {
 
   return (<div className={cstyle.contentArea} >
     <div className={cstyle.App} >
-    <TableSearchFilled fontSize={"6rem"} primaryFill={"#7719aa"} aria-hidden="true" aria-label="Supported File Types" />
+    <TableSearchFilled fontSize={"6rem"} primaryFill={"#005ea2"} aria-hidden="true" aria-label="Supported File Types" />
     <h1 className={cstyle.EmptyStateTitle}>
       Tabular Data Assistant
     </h1>
@@ -317,7 +317,7 @@ const handleCloseEvent = () => {
     <h2 className={styles.EmptyStateTitle}>Supported file types</h2>
 
 
-    <DocumentDataFilled fontSize={"40px"} primaryFill={"#7719aa"} aria-hidden="true" aria-label="Data" />
+    <DocumentDataFilled fontSize={"40px"} primaryFill={"#005ea2"} aria-hidden="true" aria-label="Data" />
             <span className={cstyle.EmptyObjectivesListItemText}><b>Data</b><br />
                 csv<br />
             </span>
