@@ -525,3 +525,15 @@ resource "azurerm_resource_group_template_deployment" "customer_attribution" {
 }
 TEMPLATE
 }
+
+module "apim" {
+  source            = "./core/apim"
+  name              = "infoasst-apim-${random_string.random.result}"
+  resourceGroupName = azurerm_resource_group.rg.name
+  tags              = local.tags
+  sku               = "Standard"
+  sku_count         = 1
+  location          = var.location
+  publisher_email   = var.apimPublisherEmail
+  publisher_name    = var.apimPublisherName
+}

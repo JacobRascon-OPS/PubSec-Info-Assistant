@@ -519,3 +519,11 @@ variable "password_lifetime" {
   default = 365
   description = "The number of days used as the lifetime for passwords"  
 }
+
+variable "apimPublisherName" {
+type=string  
+}
+
+variable "apimPublisherEmail" {
+  type=string
+}

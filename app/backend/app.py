@@ -263,7 +263,7 @@ chat_approaches = {
 
 # Create API
 app = FastAPI(
-    title="IA Web API",
+    title="HHS Chat GPT Web API",
     description="A Python API to serve as Backend For the Information Assistant Web App",
     version="0.1.0",
     docs_url="/docs",
@@ -632,7 +632,7 @@ async def get_application_title():
     return response
 
 @app.get("/getDisclaimerText")
-async def get_application_title():
+async def get_disclaimer_text():
     """Get the disclaimer text
     
     Returns:

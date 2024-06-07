@@ -149,6 +149,11 @@
     margin-right: 20px;
 }
 
+.chatAnalysisPanel div[role='tabpanel'] {
+    max-height: calc(100vh - 315px);
+    overflow-y: auto;
+  }
+
 .chatSettingsSeparator {
     margin-top: 15px;
 }
