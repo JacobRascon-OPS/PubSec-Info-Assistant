@@ -19,13 +19,51 @@ variable "sku_count" {
 }
 
 variable "location" {
-    type = "string"
+    type = string
 }
 
 variable "tags"{
-    type=object
+    type=map(string)
 }
 
 variable "resourceGroupName" {
   type=string
+}
+
+variable "policyFragments" {
+  type = list
+  
+}
+
+variable "backendName" {
+  type=string
+}
+
+variable "backendUrl" {
+  type = string
+  
+}
+
+variable "basePolicyContent" {
+  type = string
+  
+}
+
+variable "apiName" {
+  type = string
+  
+}
+
+variable "apiContent" {
+  type=string
+}
+
+variable "nameValues" {
+  type = list
+  default = []
+}
+
+variable "operationPolicies" {
+  type = list
+  default = []
 }

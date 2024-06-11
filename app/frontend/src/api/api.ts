@@ -29,11 +29,19 @@ async function getAccessToken(): Promise<string | null | undefined> {
             const tokenResp = await fetch('/.auth/me')
             if (tokenResp.status === 200) {
                 const tokenRespJson = await tokenResp.json();
-                const accessToken = tokenRespJson[0].id_token;
-                if (accessToken) {
-                    sessionStorage.setItem('hhs-gpt-access-token', accessToken)
+                const newAccessToken = tokenRespJson[0].id_token;
+
+                if (isExpired(newAccessToken)) {
+                    const refreshResp = await fetch('/.auth/refresh')
+                    if (refreshResp.status === 200) {
+                        return await getAccessToken();
+                    }
                 }
-                return accessToken;
+
+                if (newAccessToken) {
+                    sessionStorage.setItem('hhs-gpt-access-token', newAccessToken)
+                }
+                return newAccessToken;
             }
         }
         return accessToken
@@ -48,13 +56,13 @@ async function fetchApi(
     input: string | URL | globalThis.Request,
     init?: RequestInit,
 ): Promise<Response> {
-    let headers:HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY } 
-    const accessToken  = await getAccessToken();
-    if(accessToken){
-        headers = {...headers, "Authorization": `Bearer ${accessToken}`}
+    let headers: HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY }
+    const accessToken = await getAccessToken();
+    if (accessToken) {
+        headers = { ...headers, "Authorization": `Bearer ${accessToken}` }
     }
 
-    return await fetch(`${import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers})
+    return await fetch(`${import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers })
 }
 
 export async function chatApi(options: ChatRequest, signal: AbortSignal): Promise<Response> {
