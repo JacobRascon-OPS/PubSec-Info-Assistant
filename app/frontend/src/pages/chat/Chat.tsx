@@ -46,9 +46,9 @@ const Chat = () => {
     // If you update the default value here, you must also update the default value in the onResponseTempChange method.
     const [responseTemp, setResponseTemp] = useState<number>(0.6);
 
-    const [activeChatMode, setChatMode] = useState<ChatMode>(ChatMode.WorkOnly);
-    const [defaultApproach, setDefaultApproach] = useState<number>(Approaches.ReadRetrieveRead);
-    const [activeApproach, setActiveApproach] = useState<number>(Approaches.ReadRetrieveRead);
+    const [activeChatMode, setChatMode] = useState<ChatMode>(ChatMode.Ungrounded);
+    const [defaultApproach, setDefaultApproach] = useState<number>(Approaches.GPTDirect);
+    const [activeApproach, setActiveApproach] = useState<number>(Approaches.GPTDirect);
     const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | undefined>(undefined);
 
     const lastQuestionRef = useRef<string>("");
@@ -77,9 +77,14 @@ const Chat = () => {
         try {
             const fetchedFeatureFlags = await getFeatureFlags();
             setFeatureFlags(fetchedFeatureFlags);
+
+            if (!fetchedFeatureFlags?.ENABLE_WEB_CHAT) {
+                onChatModeChange({ target: { value: ChatMode.WorkOnly } })
+            }
         } catch (error) {
             // Handle the error here
             console.log(error);
+            onChatModeChange({ target: { value: ChatMode.WorkOnly } })
         }
     }
 
@@ -357,6 +362,8 @@ const Chat = () => {
                 <div className={styles.subHeader}>
                     <ChatModeButtonGroup className="" defaultValue={activeChatMode} onClick={onChatModeChange} featureFlags={featureFlags} />
                     <div className={styles.commandsContainer}>
+                        <ResponseLengthButtonGroup className={styles.chatSettingsSeparator} onClick={onResponseLengthChange} defaultValue={responseLength} />
+                        <ResponseTempButtonGroup className={styles.chatSettingsSeparator} onClick={onResponseTempChange} defaultValue={responseTemp} />
                         <ClearChatButton className={styles.commandButton} onClick={clearChat} disabled={!lastQuestionRef.current || isLoading} />
                         <SettingsButton className={styles.commandButton} onClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)} />
                         <InfoButton className={styles.commandButton} onClick={() => setIsInfoPanelOpen(!isInfoPanelOpen)} />
@@ -371,21 +378,21 @@ const Chat = () => {
                                         <div className={styles.chatEmptyStateHeader}>
                                             <BuildingMultipleFilled fontSize={"100px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="Chat with your Work Data logo" />
                                         </div>
-                                        <h1 className={styles.chatEmptyStateTitle}>Chat with your work data</h1>
+                                        <h1 className={styles.chatEmptyStateTitle}>Chat with your documents</h1>
                                     </div>
                                     : activeChatMode == ChatMode.WorkPlusWeb ?
                                         <div>
                                             <div className={styles.chatEmptyStateHeader}>
                                                 <BuildingMultipleFilled fontSize={"80px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="Chat with your Work and Web Data logo" /><AddFilled fontSize={"50px"} primaryFill={"rgba(0, 0, 0, 0.7)"} aria-hidden="true" aria-label="" /><GlobeFilled fontSize={"80px"} primaryFill={"rgba(24, 141, 69, 1)"} aria-hidden="true" aria-label="" />
                                             </div>
-                                            <h1 className={styles.chatEmptyStateTitle}>Chat with your work and web data</h1>
+                                            <h1 className={styles.chatEmptyStateTitle}>Chat with your documents and web</h1>
                                         </div>
                                         : //else Ungrounded
                                         <div>
                                             <div className={styles.chatEmptyStateHeader}>
                                                 <ChatSparkleFilled fontSize={"80px"} primaryFill={"rgba(0, 0, 0, 0.35)"} aria-hidden="true" aria-label="Chat logo" />
                                             </div>
-                                            <h1 className={styles.chatEmptyStateTitle}>Chat directly with a LLM</h1>
+                                            <h1 className={styles.chatEmptyStateTitle}>Conversational AI</h1>
                                         </div>
                                 }
                                 <span className={styles.chatEmptyObjectives}>
@@ -454,7 +461,7 @@ const Chat = () => {
                             )}
                             <QuestionInput
                                 clearOnSend
-                                placeholder="Type a new query (e.g. Who are Microsoft's top executives, provided as a table?)"
+                                placeholder="Type a new question"
                                 disabled={isLoading}
                                 onSend={question => makeApiRequest(question, defaultApproach, {}, {}, {})}
                                 onAdjustClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)}
@@ -518,8 +525,6 @@ const Chat = () => {
                         }
                         <TextField className={styles.chatSettingsSeparator} defaultValue={userPersona} label="User Persona" onChange={onUserPersonaChange} />
                         <TextField className={styles.chatSettingsSeparator} defaultValue={systemPersona} label="System Persona" onChange={onSystemPersonaChange} />
-                        <ResponseLengthButtonGroup className={styles.chatSettingsSeparator} onClick={onResponseLengthChange} defaultValue={responseLength} />
-                        <ResponseTempButtonGroup className={styles.chatSettingsSeparator} onClick={onResponseTempChange} defaultValue={responseTemp} />
                         {activeChatMode != ChatMode.Ungrounded &&
                             <div>
                                 <Separator className={styles.chatSettingsSeparator}>Filter Search Results by</Separator>
