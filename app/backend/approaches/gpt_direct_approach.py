@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Any, Sequence
 
 import openai
-from openai import AzureOpenAI
+from openai import AzureOpenAI, BadRequestError
 from openai import AsyncAzureOpenAI
 from approaches.approach import Approach
 
@@ -99,8 +99,7 @@ class GPTDirectApproach(Approach):
     
     def __init__(
         self,
-        oai_service_name: str,
-        oai_service_key: str,
+        azure_openai_token_provider: str,
         chatgpt_deployment: str,
         query_term_language: str,
         model_name: str,
@@ -112,19 +111,16 @@ class GPTDirectApproach(Approach):
         self.chatgpt_token_limit = get_token_limit(model_name)
         
         openai.api_base = azure_openai_endpoint
-        openai.api_type = 'azure'
-        openai.api_key = oai_service_key
+        openai.api_type = "azure_ad"
+        openai.azure_ad_token_provider = azure_openai_token_provider
+        openai.api_version = "2024-02-01"
 
         self.model_name = model_name
         self.model_version = model_version
         
-          
-        openai.api_type = 'azure'
-        openai.api_version = "2024-02-01"
-        
         self.client = AsyncAzureOpenAI(
         azure_endpoint = openai.api_base, 
-        api_key=openai.api_key,  
+        azure_ad_token_provider=azure_openai_token_provider,
         api_version=openai.api_version)
 
     # def run(self, history: list[dict], overrides: dict) -> any:
@@ -183,7 +179,22 @@ class GPTDirectApproach(Approach):
             async for chunk in chat_completion:
                 # Check if there is at least one element and the first element has the key 'delta'
                 if len(chunk.choices) > 0:
+                    filter_reasons = []
+                    # Check for content filtering
+                    if chunk.choices[0].finish_reason == 'content_filter':
+                        for category, details in chunk.choices[0].content_filter_results.items():
+                            if details['filtered']:
+                                filter_reasons.append(f"{category} ({details['severity']})")
+
+                    # Raise an error if any filters are triggered
+                    if filter_reasons:
+                        error_message = "The generated content was filtered due to triggering Azure OpenAI's content filtering system. Reason(s): The response contains content flagged as " + ", ".join(filter_reasons)
+                        raise ValueError(error_message)
                     yield json.dumps({"content": chunk.choices[0].delta.content}) + "\n"
+        except BadRequestError as e:
+            logging.error(f"Error generating chat completion: {str(e.body['message'])}")
+            yield json.dumps({"error": f"Error generating chat completion: {str(e.body['message'])}"}) + "\n"
+            return
         except Exception as e:
             logging.error(f"Error in GPTDirectApproach: {e}")
             yield json.dumps({"error": f"An error occurred while generating the completion. {e}"}) + "\n"

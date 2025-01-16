@@ -76,6 +76,20 @@ if [[ $SECURE_MODE == true && $USE_EXISTING_AOAI == true ]]; then
     exit 1
 fi
 
+#SharePoint
+if [[ $SECURE_MODE == true && $ENABLE_SHAREPOINT_CONNECTOR == true ]]; then
+    echo -e "\n"
+    echo -e "SharePoint feature is not available in secure mode. Check your values for SECURE_MODE and ENABLE_SHAREPOINT_CONNECTOR. \e[0m\n"
+    exit 1
+fi
+
+if [[ $SECURE_MODE == false && $ENABLE_DDOS_PROTECTION_PLAN == true ]]; then
+    echo -e "\n"
+    echo -e "DDOS protection is not available outside of secure mode. Check your values for SECURE_MODE and ENABLE_DDOS_PROTECTION_PLAN. \e[0m\n"
+    exit 1
+fi
+
+
 # Fail if the following environment variables are not set
 if [[ -z $WORKSPACE ]]; then
     echo "\e[31mWORKSPACE must be set.\e[0m\n"
@@ -90,5 +104,8 @@ export TF_VAR_resource_group_name="infoasst-$WORKSPACE"
 
 # The default key that is used in the remote state
 export TF_BACKEND_STATE_KEY="shared.infoasst.tfstate"
+
+# Subscription ID mandatory for Terraform AzureRM provider 4.x.x https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/4.0-upgrade-guide#specifying-subscription-id-is-now-mandatory
+export ARM_SUBSCRIPTION_ID="$SUBSCRIPTION_ID"
 
 echo -e "\n\e[32m🎯 Target Resource Group: \e[33m$TF_VAR_resource_group_name\e[0m\n"

@@ -1,8 +1,8 @@
-# Using IA Accelerator for the first time
+# Using IA agent template for the first time
 
-Once you have successfully deployed the IA Accelerator, you are ready to use the accelerator to process some data.
+Once you have successfully deployed the IA agent template, you are ready to use the agent template to process some data.
 
-To use the IA Accelerator, you need to follow these steps:
+To use the IA agent template, you need to follow these steps:
 
 > 1. Prepare your data and upload it to Azure.
 >

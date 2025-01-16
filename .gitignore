@@ -403,3 +403,6 @@ azcopy.tar.gz
 azcopy_dir
 
 infra/subscriptionkey.txt
+#Openvpn setting
+openvpn/*
+!openvpn/info.txt
