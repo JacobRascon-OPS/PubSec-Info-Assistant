@@ -110,10 +110,9 @@ resource "null_resource" "get_subscription_key" {
   provisioner "local-exec" {
    
     command  = <<EOT
-    $subscriptonId=az rest --uri "${azurerm_api_management.apim.id}/subscriptions?api-version=2022-08-01" --query "value[? contains(properties.scope,'${azurerm_api_management_product.unlimited.product_id}')] | [0].name" -o tsv
+    subscriptonId=$(az rest --uri "${azurerm_api_management.apim.id}/subscriptions?api-version=2022-08-01" --query "value[? contains(properties.scope,'${azurerm_api_management_product.unlimited.product_id}')] | [0].name" -o tsv)
     az rest --method post --uri "${azurerm_api_management.apim.id}/subscriptions/$subscriptonId/listSecrets?api-version=2022-08-01" --query primaryKey -o tsv > ${local.subscription_key_file_name}
   EOT
-  interpreter = ["pwsh", "-Command"]
   }
 }
 

@@ -383,7 +383,7 @@ module "webapp" {
     AZURE_SEARCH_SERVICE                    = module.searchServices.name
     AZURE_SEARCH_SERVICE_ENDPOINT           = module.searchServices.endpoint
     AZURE_SEARCH_AUDIENCE                   = var.azure_search_scope
-    AZURE_OPENAI_CHATGPT_DEPLOYMENT         = var.chatGptDeploymentName != "" ? var.chatGptDeploymentName : (var.chatGptModelName != "" ? var.chatGptModelName : "gpt-35-turbo-16k")
+    AZURE_OPENAI_CHATGPT_DEPLOYMENT         = var.chatGptDeploymentName != "" ? var.chatGptDeploymentName : (var.chatGptModelName != "" ? var.chatGptModelName : "gpt-4o")
     AZURE_OPENAI_CHATGPT_MODEL_NAME         = var.chatGptModelName
     AZURE_OPENAI_CHATGPT_MODEL_VERSION      = var.chatGptModelVersion
     USE_AZURE_OPENAI_EMBEDDINGS             = var.useAzureOpenAIEmbeddings
@@ -414,7 +414,6 @@ module "webapp" {
   }
 
   aadClientId = module.entraObjects.azure_ad_web_app_client_id
-  aadClientSecret = module.entraObjects.azure_ad_web_app_client_secret
   depends_on  = [module.kvModule]
 }
 
@@ -509,11 +508,11 @@ module "openaiServices" {
 
   deployments = [
     {
-      name            = var.chatGptDeploymentName != "" ? var.chatGptDeploymentName : (var.chatGptModelName != "" ? var.chatGptModelName : "gpt-35-turbo-16k")
+      name            = var.chatGptDeploymentName != "" ? var.chatGptDeploymentName : (var.chatGptModelName != "" ? var.chatGptModelName : "gpt-4o")
       model           = {
         format        = "OpenAI"
-        name          = var.chatGptModelName != "" ? var.chatGptModelName : "gpt-35-turbo-16k"
-        version       = var.chatGptModelVersion != "" ? var.chatGptModelVersion : "0613"
+        name          = var.chatGptModelName != "" ? var.chatGptModelName : "gpt-4o"
+        version       = var.chatGptModelVersion != "" ? var.chatGptModelVersion : "2024-08-06"
       }
       sku             = {
         name          = var.chatGptModelSkuName
@@ -901,16 +900,16 @@ module "apim" {
   name              = var.apimName != "" ? var.apimName : "infoasst-apim-${random_string.random.result}"
   resourceGroupName = azurerm_resource_group.rg.name
   tags              = local.tags
-  sku               = "Standard"
+  sku               = var.apimSku != "" ? var.apimSku : "Developer"
   sku_count         = 1
   location          = var.location
   publisher_email   = var.apimPublisherEmail
   publisher_name    = var.apimPublisherName
   apiName           = "HHS Chat GPT Web API"
   apiContent     = file("../apim/openapi.json")
-  basePolicyContent = templatefile("../apim/policies/base.xml", { endpoint = module.backend.uri })
+  basePolicyContent = templatefile("../apim/policies/base.xml", { endpoint = module.webapp.uri })
   backendName       = "hhs-api"
-  backendUrl        = module.backend.uri
+  backendUrl        = module.webapp.uri
   operationPolicies = [
     {
       operationId="chat_chat_post"

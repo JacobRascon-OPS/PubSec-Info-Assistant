@@ -155,6 +155,8 @@ jq -r  '
         {
             "path": "APIM_SUBSCRIPTION_KEY",
             "env_var": "VITE_OCP_APIM_SUBSCRIPTION_KEY"
+        },
+        {
             "path": "AZURE_AI_LOCATION",
             "env_var": "AZURE_AI_LOCATION"
         },

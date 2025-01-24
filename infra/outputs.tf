@@ -44,7 +44,7 @@ output "RESOURCE_GROUP_NAME" {
 }
 
 output "AZURE_OPENAI_CHAT_GPT_DEPLOYMENT" {
-  value = var.chatGptDeploymentName != "" ? var.chatGptDeploymentName : var.chatGptModelName != "" ? var.chatGptModelName : "gpt-35-turbo-16k"
+  value = var.chatGptDeploymentName != "" ? var.chatGptDeploymentName : var.chatGptModelName != "" ? var.chatGptModelName : "gpt-4o"
 }
 
 output "AZURE_OPENAI_RESOURCE_GROUP" {
@@ -194,6 +194,7 @@ output "APIM_URI" {
 output "APIM_SUBSCRIPTION_KEY" {
   value = module.apim.apim_subscription_key
 }
+
 output "CONTAINER_REGISTRY" {
   value = module.acr.login_server
 }
