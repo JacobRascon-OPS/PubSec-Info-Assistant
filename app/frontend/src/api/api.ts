@@ -56,7 +56,7 @@ export async function fetchApi(
     input: string | URL | globalThis.Request,
     init?: RequestInit,
 ): Promise<Response> {
-    let headers: HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY }
+    let headers: HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY, "X-User-Principal-Name" : "local-user" }
     const accessToken = await getAccessToken();
     if (accessToken) {
         headers = { ...headers, "Authorization": `Bearer ${accessToken}` }
