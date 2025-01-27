@@ -39,7 +39,7 @@ from approaches.tabulardataassistant import (
 )
 from shared_code.status_log import State, StatusClassification, StatusLog
 from azure.cosmos import CosmosClient
-
+from core.auth import get_user
 
 # === ENV Setup ===
 
@@ -324,6 +324,10 @@ async def chat(request: Request):
         impl = chat_approaches.get(Approaches(int(approach)))
         if not impl:
             return {"error": "unknown approach"}, 400
+
+        if "overrides" not in json_body:
+            json_body["overrides"] = {}
+        json_body["overrides"]["selected_user"] = get_user(request)
 
         if (Approaches(int(approach)) == Approaches.CompareWorkWithWeb or
             Approaches(int(approach)) == Approaches.CompareWebWithWork):
@@ -866,6 +870,7 @@ async def get_feature_flags():
 
 @app.post("/file")  
 async def upload_file(  
+    request: Request,  
     file: UploadFile = File(...),   
     file_path: str = Form(...),
     tags: str = Form(None)  
@@ -886,7 +891,7 @@ async def upload_file(
             file.file,
             overwrite=True,
             content_settings=ContentSettings(content_type=file.content_type),
-            metadata= {"tags": tags}
+            metadata= {"tags": tags, "uploaded_user" :  get_user(request)}
         )
   
         return {"message": f"File '{file.filename}' uploaded successfully"}  

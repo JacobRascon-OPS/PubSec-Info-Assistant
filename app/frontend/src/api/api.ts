@@ -52,7 +52,7 @@ async function getAccessToken(): Promise<string | null | undefined> {
 }
 
 
-async function fetchApi(
+export async function fetchApi(
     input: string | URL | globalThis.Request,
     init?: RequestInit,
 ): Promise<Response> {
@@ -377,6 +377,8 @@ export async function processAgentResponse(question: string): Promise<String> {
 
     return parsedResponse;
 }
+
+
 
 export async function logStatus(status_log_entry: StatusLogEntry): Promise<StatusLogResponse> {
     var response = await fetchApi("/logstatus", {
