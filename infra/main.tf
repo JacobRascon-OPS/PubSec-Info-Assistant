@@ -645,7 +645,7 @@ module "bingSearch" {
   name                          = "infoasst-bing-${random_string.random.result}"
   resourceGroupName             = azurerm_resource_group.rg.name
   tags                          = local.tags
-  sku                           = "S1" //supported SKUs can be found at https://www.microsoft.com/en-us/bing/apis/pricing
+  sku                           = var.bingSearchSku //supsported SKUs can be found at https://www.microsoft.com/en-us/bing/apis/pricing
   arm_template_schema_mgmt_api  = var.arm_template_schema_mgmt_api
   key_vault_name                = module.kvModule.keyVaultName
   kv_secret_expiration          = var.kv_secret_expiration

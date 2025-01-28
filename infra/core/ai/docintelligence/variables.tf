@@ -21,7 +21,7 @@ variable "sku" {
     name = string
   })
   default = {
-    name = "S0"
+    name = "F0"
   }
 }
 
