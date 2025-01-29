@@ -4,6 +4,7 @@
 import { array, func } from "prop-types";
 import React from "react";
 import styles from "./drop-zone.module.css";
+import { HardDrive48Regular } from "@fluentui/react-icons";
 
 const Banner = ({ onClick, onDrop }: {onClick: any, onDrop: any}) => {
   const handleDragOver = (ev: any) => {
@@ -25,6 +26,7 @@ const Banner = ({ onClick, onDrop }: {onClick: any, onDrop: any}) => {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
+      <HardDrive48Regular />
       <span className={styles.banner_text}>Click to Add files</span>
       <span className={styles.banner_text}>Or</span>
       <span className={styles.banner_text}>Drag and Drop files here</span>

@@ -2,8 +2,10 @@
 // Licensed under the MIT license.
 
 import { useState } from 'react';
-import { Pivot,
-    PivotItem } from "@fluentui/react";
+import {
+    Pivot,
+    PivotItem
+} from "@fluentui/react";
 import { ITag } from '@fluentui/react/lib/Pickers';
 import { FilePicker } from "../../components/filepicker/file-picker";
 import { FileStatus } from "../../components/FileStatus/FileStatus";
@@ -11,16 +13,19 @@ import { TagPickerInline } from "../../components/TagPicker/TagPicker"
 import { FolderPicker } from '../../components/FolderPicker/FolderPicker';
 import { SparkleFilled, DocumentPdfFilled, DocumentDataFilled, GlobePersonFilled, MailFilled, StoreMicrosoftFilled } from "@fluentui/react-icons";
 import styles from "./Content.module.css";
+import { OneDriveFilePicker } from '../../components/filepicker/onedrive-file-picker';
+import Switch from 'react-switch';
 
 export interface IButtonExampleProps {
     disabled?: boolean;
     checked?: boolean;
-  }
+}
 
 const Content = () => {
     const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
     const [selectedTags, setSelectedTags] = useState<string[] | undefined>(undefined);
     const [selectedApproach, setSelectedApproach] = useState<number | undefined>(undefined);
+    const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
 
     const onSelectedKeyChanged = (selectedFolder: string[]) => {
         setSelectedKey(selectedFolder[0]);
@@ -37,7 +42,11 @@ const Content = () => {
 
     const handleLinkClick = (item?: PivotItem) => {
         setSelectedKey(undefined);
-    };    
+    };
+
+    const handleToggle = () => {
+        setIsLocalFileSelection(!isLocalFileSelection);
+    }
 
     return (
         <div className={styles.contentArea} >
@@ -66,8 +75,8 @@ const Content = () => {
                                 <span className={styles.EmptyObjectivesListItem}>
                                     <DocumentPdfFilled fontSize={"40px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="PDF" />
                                     <span className={styles.EmptyObjectivesListItemText}><b>PDF</b><br />
-                                    For page count maximum check documentation  <a href="https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept-layout?view=doc-intel-4.0.0#input-requirements">
-                                        here</a> 
+                                        For page count maximum check documentation  <a href="https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept-layout?view=doc-intel-4.0.0#input-requirements">
+                                            here</a>
                                     </span>
                                 </span>
                                 <span className={styles.EmptyObjectivesListItem}>
@@ -85,18 +94,27 @@ const Content = () => {
                             </span>
                         </div>
                         <div className={styles.EmptyObjectivesListItem}>
-                            <FolderPicker allowFolderCreation={true} onSelectedKeyChange={onSelectedKeyChanged}/>
-                            <TagPickerInline allowNewTags={true} onSelectedTagsChange={onSelectedTagsChanged}/>
-                            <FilePicker folderPath={selectedKey || ""} tags={selectedTags || []}/>
+                            <FolderPicker allowFolderCreation={true} onSelectedKeyChange={onSelectedKeyChanged} />
+                            <TagPickerInline allowNewTags={true} onSelectedTagsChange={onSelectedTagsChanged} />
+
+                        </div>
+                        <div className={styles.FileSelectionItem}>
+                            <div className={styles.FileSelector}>
+                                <span>Would you like to upload local files? </span>
+                                <Switch height={20} onChange={handleToggle} checked={isLocalFileSelection} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#CCCCC" />
+                            </div>
+
+                            {isLocalFileSelection && <FilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
+                            {!isLocalFileSelection && <OneDriveFilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                         </div>
                     </div>
                 </PivotItem>
                 <PivotItem headerText="Upload Status" aria-label="Upload Status Tab">
-                    <FileStatus className=""/>
+                    <FileStatus className="" />
                 </PivotItem>
             </Pivot>
         </div>
     );
 };
-    
+
 export default Content;

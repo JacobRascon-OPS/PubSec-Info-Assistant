@@ -14,6 +14,18 @@ import Chat from "./pages/chat/Chat";
 import Content from "./pages/content/Content";
 import Tutor from "./pages/tutor/Tutor";
 import { Tda } from "./pages/tda/Tda";
+import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate } from "@azure/msal-react";
+import { Configuration, PublicClientApplication } from "@azure/msal-browser";
+
+// MSAL configuration
+const configuration: Configuration = {
+    auth: {
+        clientId: `${import.meta.env.VITE_AZURE_AD_CLIENTID}`,
+        authority: `https://login.microsoftonline.com/${import.meta.env.VITE_AZURE_AD_TENANTID}`
+    }
+};
+
+const pca = new PublicClientApplication(configuration);
 
 initializeIcons();
 
@@ -28,14 +40,16 @@ export default function App() {
                     <Route path="*" element={<NoPage />} />
                     <Route path="tutor" element={<Tutor />} />
                     <Route path="tda" element={<Tda folderPath={""} tags={[]} />} />
-            </Route>
+                </Route>
             </Routes>
-        </HashRouter>    
+        </HashRouter>
     );
 }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <App />
+        <MsalProvider instance={pca}>
+            <App />
+        </MsalProvider>
     </React.StrictMode>
 );
