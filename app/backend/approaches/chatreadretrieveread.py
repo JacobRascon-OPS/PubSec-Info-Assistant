@@ -274,7 +274,12 @@ Here is how you should answer every question:
                 search_filter = search_filter + f" and tags/any(t: search.in(t, '{tags_filter}', ','))"
             else:
                 search_filter = f"tags/any(t: search.in(t, '{tags_filter}', ','))"
-
+        uploaded_user = overrides.get("uploaded_user", "")
+        if uploaded_user != "":
+            if search_filter is not None:
+                search_filter = search_filter + f" and search.in(uploaded_user, '{uploaded_user}', ',')"
+            else:
+                search_filter = f"search.in(uploaded_user, '{uploaded_user}', ',')"
         # Hybrid Search
         # r = self.search_client.search(generated_query, vector_queries =[vector], top=top)
 
