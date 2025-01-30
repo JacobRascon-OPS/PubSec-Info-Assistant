@@ -91,7 +91,10 @@ ENV = {
     "DISCLAIMER_CONTENT_FILE_PATH":"./disclaimer.md",
     "MAX_CSV_FILE_SIZE": "7",
     "LOCAL_DEBUG": "false",
-    "AZURE_AI_CREDENTIAL_DOMAIN": "cognitiveservices.azure.com"
+    "AZURE_AI_CREDENTIAL_DOMAIN": "cognitiveservices.azure.com",
+    "ONEDRIVE_AZURE_AD_CLIENTID":"",
+    "ONEDRIVE_AZURE_AD_TENANTID":"",
+    "ONEDRIVE_BASE_URL":""
     }
 
 for key, value in ENV.items():
@@ -912,6 +915,14 @@ async def get_file(request: Request):
     return StreamingResponse(stream,
                              media_type=blob_properties.content_settings.content_type, 
                              headers={"Content-Disposition": f"inline; filename={blob_name}"})
+
+@app.get("/get-onedrive-auth-config")
+async def get_onedrive_auth_config():
+    return {
+        "TENANT_ID": ENV["ONEDRIVE_AZURE_AD_TENANTID"],
+        "CLIENT_ID": ENV["ONEDRIVE_AZURE_AD_CLIENTID"],
+        "BASE_URL": ENV["ONEDRIVE_BASE_URL"]
+    }
 
 app.mount("/", StaticFiles(directory="static"), name="static")
 

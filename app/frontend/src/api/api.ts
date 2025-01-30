@@ -19,6 +19,7 @@ import {
     getMaxCSVFileSizeType,
     FetchCitationFileResponse,
     DisclaimerText,
+    OneDriveAuthConfigResponse,
 } from "./models";
 import { isExpired } from "react-jwt";
 
@@ -552,4 +553,20 @@ export async function fetchCitationFile(filePath: string): Promise<FetchCitation
     }
     const fileResponse: FetchCitationFileResponse = { file_blob: await response.blob() };
     return fileResponse;
+}
+
+export async function getOneDriveAuthConfig():Promise<OneDriveAuthConfigResponse> {
+
+    const response = await fetch('/get-onedrive-auth-config', {
+        method: 'GET'
+    });
+
+    const authConfigResponse: OneDriveAuthConfigResponse = await response.json();
+    
+    if (response.status > 299 || !response.ok) {
+        console.log(response);
+        throw Error('Failed to fetch cofiguration' + response.statusText);
+    }
+    
+    return authConfigResponse;
 }

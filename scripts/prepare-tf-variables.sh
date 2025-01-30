@@ -52,3 +52,4 @@ fi
 if [[ -n $AZURE_OPENAI_EMBEDDINGS_SKU ]]; then
     export TF_VAR_azureOpenAIEmbeddingsModelSku=$AZURE_OPENAI_EMBEDDINGS_SKU
 fi
+export TF_VAR_oneDriveBaseUrl =  $ONEDRIVE_BASE_URL

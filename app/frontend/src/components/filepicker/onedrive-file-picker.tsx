@@ -4,12 +4,12 @@
 import classNames from "classnames";
 import { nanoid } from "nanoid";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Cloud48Filled, Cloud48Regular, CloudFilled, SpinnerIos16Filled } from "@fluentui/react-icons";
+import { Cloud48Regular, SpinnerIos16Filled } from "@fluentui/react-icons";
 import styles from "./file-picker.module.css";
 import { FilesList } from "./files-list";
-import { logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";
-import { useMsal } from "@azure/msal-react";
+import { getOneDriveAuthConfig, logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";
 import { getToken } from './auth'
+import { Configuration, IPublicClientApplication, PublicClientApplication } from "@azure/msal-browser";
 
 interface Props {
   folderPath: string;
@@ -20,13 +20,37 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   const [files, setFiles] = useState<any>([]);
   const [progress, setProgress] = useState(0);
   const [uploadStarted, setUploadStarted] = useState(false);
+  const [msalInstance, setMsalInstace] = useState<IPublicClientApplication | null>(null)
+  const [baseUrl, setBaseUrl] = useState<string | null>(null);
 
-  const baseUrl = import.meta.env.VITE_ONEDRIVE_BASE_URL;
-  const { instance } = useMsal();
+
 
   const channelId = nanoid(); // Always use a unique id for the channel when hosting the picker.
   let win: Window | null;
   let port: MessagePort;
+
+  const setupOneDriveAuthentication = async () => {
+    const authConfig = await getOneDriveAuthConfig()
+    if (authConfig.error) {
+      console.error(authConfig.error)
+      return;
+    }
+
+    // MSAL configuration
+    const configuration: Configuration = {
+      auth: {
+        clientId: authConfig.CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${authConfig.TENANT_ID}`,
+        redirectUri: window.location.origin
+      }
+    };
+
+    const pca = new PublicClientApplication(configuration);
+    await pca.initialize();
+
+    setMsalInstace(pca);
+    setBaseUrl(authConfig.BASE_URL);
+  }
 
   const options = {
     sdk: "8.0",
@@ -91,8 +115,11 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   }
 
   async function getAccessToken() {
-    const token = await getToken({ resource: baseUrl, command: "authenticate", type: "SharePoint" }, instance);
-    return token;
+    if (msalInstance && baseUrl) {
+      const token = await getToken({ resource: baseUrl || '', command: "authenticate", type: "SharePoint" }, msalInstance);
+      return token;
+    }
+    return null;
   }
 
   function initializeMessageListener(event: MessageEvent): void {
@@ -156,7 +183,10 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
             // 'getToken' represents a method that can take a command and return a valid auth token for the requested resource
             try {
               console.log(command)
-              const token = await getToken(command, instance, "MyFiles.Read");
+              if (!msalInstance) {
+                throw new Error("OneDrive auth config not initialized.");
+              }
+              const token = await getToken(command, msalInstance, "MyFiles.Read");
 
               if (!token) {
                 throw new Error("Unable to obtain a token.");
@@ -317,6 +347,10 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
       let uploadedFilesCount = 0;
       const accessToken = await getAccessToken()
 
+      if (!accessToken) {
+        throw new Error("Unable to obtain a access token.");
+      }
+
       const uploadPromises = files.map(async (indexedFile: any, index: any) => {
         const file = await getFile(indexedFile.file, accessToken);
         if (file) {
@@ -384,6 +418,10 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
     }
   }, [progress]);
 
+  useEffect(() => {
+    setupOneDriveAuthentication();
+  }, [])
+
   const uploadComplete = useMemo(() => progress === 100, [progress]);
 
   return (
@@ -392,12 +430,12 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
       <div className={styles.canvas_wrapper}>
         <div
           className={styles.banner}
-          style={{cursor:'pointer'}}
+          style={{ cursor: 'pointer' }}
           onClick={(e) => {
             launchPicker(e);
           }}
         >
-         <Cloud48Regular />
+          <Cloud48Regular />
           <span className={styles.banner_text}>Click to Add files</span>
         </div>
       </div>
