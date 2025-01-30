@@ -312,6 +312,23 @@ def get_tags(blob_path):
     else:
         tags_list = []
     return tags_list
+def get_uploaded_user(blob_path):
+    """ Retrieves user from the upload container blob
+    """     
+    # Remove the container prefix
+    path_parts = blob_path.split('/')
+    blob_path = '/'.join(path_parts[1:])
+
+    blob_service_client = BlobServiceClient(ENV["AZURE_BLOB_STORAGE_ENDPOINT"],
+                                            credential=azure_credential)
+    blob_client = blob_service_client.get_blob_client(
+        container=ENV["AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"],
+        blob=blob_path)
+
+    blob_properties = blob_client.get_blob_properties()
+    #users = blob_properties.metadata.get("users")
+    uploaded_user = blob_properties.metadata.get("uploaded_user")
+    return uploaded_user
 
 
 def poll_queue() -> None:
@@ -358,6 +375,7 @@ def poll_queue() -> None:
             # get tags to apply to the chunk
             tag_list = get_tags(blob_path)
             log.debug("Successfully pulled tags for %s. %d tags found.", blob_path, len(tag_list))
+            uploaded_user = get_uploaded_user(blob_path)
 
             # Iterate over the chunks in the container
             chunk_list = container_client.list_blobs(name_starts_with=chunk_folder_path)
@@ -406,6 +424,7 @@ def poll_queue() -> None:
                 index_chunk['file_name'] = chunk_dict["file_name"]
                 index_chunk['file_uri'] = chunk_dict["file_uri"]
                 index_chunk['folder'] = file_directory[:-1]
+                index_chunk['uploaded_user'] = uploaded_user
                 index_chunk['tags'] = tag_list
                 index_chunk['chunk_file'] = chunk.name
                 index_chunk['file_class'] = chunk_dict["file_class"]

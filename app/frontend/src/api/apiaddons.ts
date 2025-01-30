@@ -7,8 +7,7 @@ export async function submitFile(file: File, filePath : string, tags : string | 
     if (tags != "") {
         data.append("tags", tags); 
       }
-
-    return await fetchApi("/logstatus", {
+    return await fetchApi("/file", {
         method: "POST",  
         body: data,  
     });

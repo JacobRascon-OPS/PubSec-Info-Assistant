@@ -13,6 +13,9 @@ import pandas as pd
 import pydantic
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile, Form
+from fastapi import Security, Depends, Header
+from fastapi.security import APIKeyHeader
+
 from fastapi.responses import RedirectResponse, StreamingResponse
 import openai
 from approaches.comparewebwithwork import CompareWebWithWork
@@ -39,7 +42,7 @@ from approaches.tabulardataassistant import (
 )
 from shared_code.status_log import State, StatusClassification, StatusLog
 from azure.cosmos import CosmosClient
-from core.auth import get_user
+from core.auth import get_user, user_header
 
 # === ENV Setup ===
 
@@ -271,14 +274,27 @@ chat_approaches = {
 }
 
 IS_READY = True
+from contextlib import asynccontextmanager
 
-# Create API
+
+dependencies = []
+usernameheader = APIKeyHeader(name=user_header)
+async def azure_scheme(username: str = Depends(usernameheader)):
+    print("Username " + username)
+    if username == None or username == "":
+        username = "anonymous"
+    #    raise HTTPException(status_code=403, detail="Username must be provided")
+    return username
+dependencies.append(Security(azure_scheme))
+
 app = FastAPI(
     title="HHS Chat GPT Web API",
     description="A Python API to serve as Backend For the Information Assistant Web App",
     version="0.1.0",
     docs_url="/docs",
+    dependencies=[]
 )
+
 
 @app.get("/", include_in_schema=False, response_class=RedirectResponse)
 async def root():
@@ -327,7 +343,7 @@ async def chat(request: Request):
 
         if "overrides" not in json_body:
             json_body["overrides"] = {}
-        json_body["overrides"]["selected_user"] = get_user(request)
+        json_body["overrides"]["uploaded_user"] = get_user(request)
 
         if (Approaches(int(approach)) == Approaches.CompareWorkWithWeb or
             Approaches(int(approach)) == Approaches.CompareWebWithWork):
@@ -363,11 +379,13 @@ async def get_all_upload_status(request: Request):
     state = json_body.get("state")
     folder = json_body.get("folder")
     tag = json_body.get("tag")
+    uploaded_user = get_user(request)
     try:
         results = statusLog.read_files_status_by_timeframe(timeframe,
             State[state],
             folder,
             tag,
+            uploaded_user,
             os.environ["AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"])
 
         # retrieve tags for each file
@@ -873,6 +891,7 @@ async def upload_file(
     request: Request,  
     file: UploadFile = File(...),   
     file_path: str = Form(...),
+    x_user_principal_name: str = Header(default=None),
     tags: str = Form(None)  
 ):  
     """  
