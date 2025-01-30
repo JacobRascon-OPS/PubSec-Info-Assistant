@@ -20,11 +20,11 @@ import {
     FetchCitationFileResponse,
     DisclaimerText,
 } from "./models";
-import { isExpired } from "react-jwt";
+import { isExpired, decodeToken } from "react-jwt";
 
-async function getAccessToken(): Promise<string | null | undefined> {
+async function getAccessToken(): Promise<string| undefined | null> {
     try {
-        let accessToken = sessionStorage.getItem('hhs-gpt-access-token')
+        let accessToken = sessionStorage.getItem('hhs-gpt-access-token');
         if (!accessToken || isExpired(accessToken)) {
             const tokenResp = await fetch('/.auth/me')
             if (tokenResp.status === 200) {
@@ -44,22 +44,37 @@ async function getAccessToken(): Promise<string | null | undefined> {
                 return newAccessToken;
             }
         }
-        return accessToken
+        return accessToken;
     }
     catch {
         return null;
     }
 }
 
+interface DecodedToken {  
+    email: string;  
+}
 
-async function fetchApi(
+export async function fetchApi(
     input: string | URL | globalThis.Request,
     init?: RequestInit,
 ): Promise<Response> {
-    let headers: HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY }
+    let headers: HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY}
     const accessToken = await getAccessToken();
+    
     if (accessToken) {
-        headers = { ...headers, "Authorization": `Bearer ${accessToken}` }
+        let email = '';
+        try{
+            const decodedToken = await decodeToken(accessToken) as DecodedToken;  
+            email = decodedToken.email;
+        }
+        catch(error){
+            console.error('Failed to decode token', error); 
+        }
+        headers = { ...headers, "Authorization": `Bearer ${accessToken}` ,"X-User-Principal-Name": `${email}`}
+    }
+    else if(import.meta.env.VITE_ENVIRONMENT === 'local'){ 
+        headers = { ...headers,"X-User-Principal-Name": `test.user@test.com`}
     }
 
     return await fetch(`${import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers })
@@ -377,6 +392,8 @@ export async function processAgentResponse(question: string): Promise<String> {
 
     return parsedResponse;
 }
+
+
 
 export async function logStatus(status_log_entry: StatusLogEntry): Promise<StatusLogResponse> {
     var response = await fetchApi("/logstatus", {

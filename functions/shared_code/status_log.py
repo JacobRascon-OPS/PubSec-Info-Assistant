@@ -116,6 +116,7 @@ class StatusLog:
                        state: State = State.ALL,
                        folder_path: str = 'All',
                        tag: str = 'All',
+                       uploaded_user : str = 'All',
                        container: str = 'upload'
                        ):
         """ 
@@ -144,6 +145,8 @@ class StatusLog:
         #********************************************************
         if tag != "All":
             conditions.append(f"ARRAY_CONTAINS(c.tags, '{tag}')")
+        if uploaded_user != "All":
+            conditions.append(f"c.uploaded_user='{uploaded_user}'")
             
         path_prefix = container + '/'
         if folder_path == 'Root':
@@ -254,6 +257,20 @@ class StatusLog:
 
         #self.container.upsert_item(body=json_document)
         self._log_document[document_id] = json_document
+    def update_document_uploaded_user(self, document_path, uploaded_user : str):
+        """Updates the state of the document in the storage"""
+        try:
+            document_id = self.encode_document_id(document_path)
+            logging.info("%sDocumentID - %s", uploaded_user, document_id)
+            if self._log_document.get(document_id, "") != "":
+                json_document = self._log_document[document_id]
+                json_document['uploaded_user'] = uploaded_user
+                self.save_document(document_path)
+                self._log_document[document_id] = json_document
+            else:
+                logging.warning("Document with ID %s not found.", document_id)
+        except Exception as err:
+            logging.error("An error occurred while updating the document state: %s", str(err))
 
     def update_document_state(self, document_path, status, state=State.PROCESSING):
         """Updates the state of the document in the storage"""

@@ -78,6 +78,16 @@ def get_tags_and_upload_to_cosmos(blob_service_client, blob_path):
     statusLog.update_document_tags(blob_path, tags_list)
     return tags_list
 
+def get_uploaded_user_and_upload_to_cosmos(blob_service_client, blob_path):
+    """ Gets the users from the blob metadata and uploads them to cosmos db"""
+    file_name, file_extension, file_directory = utilities_helper.get_filename_and_extension(blob_path)
+    path = file_directory + file_name + file_extension
+    blob_client = blob_service_client.get_blob_client(blob=path)
+    blob_properties = blob_client.get_blob_properties()
+    uploaded_user = blob_properties.metadata.get("uploaded_user")
+
+    statusLog.update_document_uploaded_user(blob_path, uploaded_user)
+    return uploaded_user
 
 def main(myblob: func.InputStream):
     """ Function to read supported file types and pass to the correct queue for processing"""
@@ -170,7 +180,7 @@ def main(myblob: func.InputStream):
         blob_service_client = BlobServiceClient(azure_blob_endpoint, credential=azure_credential)
         upload_container_client = blob_service_client.get_container_client(azure_blob_upload_container)
         get_tags_and_upload_to_cosmos(upload_container_client, myblob.name)
-        
+        get_uploaded_user_and_upload_to_cosmos(upload_container_client, myblob.name)
         # Queue message with a random backoff so as not to put the next function under unnecessary load
         queue_client = QueueClient(account_url=azure_queue_endpoint,
                                queue_name=queue_name,
