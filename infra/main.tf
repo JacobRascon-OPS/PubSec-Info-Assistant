@@ -245,6 +245,8 @@ module "storage" {
   network_rules_allowed_subnets   = var.is_secure_mode ? [module.network[0].snetIntegration_id, module.network[0].snetFunction_id] : null
   kv_secret_expiration            = var.kv_secret_expiration
   logAnalyticsWorkspaceResourceId = module.logging.logAnalyticsId
+  container_prefixes = var.container_prefixes
+  retention_days = var.retention_days
 }
 
 module "kvModule" {

@@ -133,3 +133,11 @@ variable "kv_secret_expiration" {
 variable "logAnalyticsWorkspaceResourceId" {
   type = string
 }
+
+variable "retention_days" {
+  type = number
+}
+
+variable "container_prefixes" {
+  type = list(string)
+}

@@ -311,12 +311,12 @@ resource "azurerm_storage_management_policy" "storage_retention_policy" {
 
     filters {
       blob_types   = ["blockBlob"]
-      prefix_match = ["upload/"]
+      prefix_match = var.container_prefixes
     }
 
     actions {
       base_blob {
-        delete_after_days_since_creation_greater_than = 1
+        delete_after_days_since_creation_greater_than = var.retention_days
       }
     }
   }
