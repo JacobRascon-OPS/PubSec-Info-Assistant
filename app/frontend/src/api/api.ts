@@ -19,10 +19,11 @@ import {
     getMaxCSVFileSizeType,
     FetchCitationFileResponse,
     DisclaimerText,
+    OneDriveAuthConfigResponse,
 } from "./models";
 import { isExpired, decodeToken } from "react-jwt";
 
-async function getAccessToken(): Promise<string| undefined | null> {
+async function getAccessToken(): Promise<string | undefined | null> {
     try {
         let accessToken = sessionStorage.getItem('hhs-gpt-access-token');
         if (!accessToken || isExpired(accessToken)) {
@@ -51,30 +52,36 @@ async function getAccessToken(): Promise<string| undefined | null> {
     }
 }
 
-interface DecodedToken {  
-    email: string;  
+interface DecodedToken {
+    email: string;
 }
 
 export async function fetchApi(
     input: string | URL | globalThis.Request,
     init?: RequestInit,
 ): Promise<Response> {
-    let headers: HeadersInit = { ...init?.headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY}
-    const accessToken = await getAccessToken();
-    
-    if (accessToken) {
-        let email = '';
-        try{
-            const decodedToken = await decodeToken(accessToken) as DecodedToken;  
-            email = decodedToken.email;
+
+    let headers: HeadersInit = { ...init?.headers}
+    if (import.meta.env.VITE_ENVIRONMENT !== 'local') {
+
+        headers = { ...headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY }
+
+        const accessToken = await getAccessToken();
+
+        if (accessToken) {
+            let email = '';
+            try {
+                const decodedToken = await decodeToken(accessToken) as DecodedToken;
+                email = decodedToken.email;
+            }
+            catch (error) {
+                console.error('Failed to decode token', error);
+            }
+            headers = { ...headers, "Authorization": `Bearer ${accessToken}`, "X-User-Principal-Name": `${email}` }
         }
-        catch(error){
-            console.error('Failed to decode token', error); 
-        }
-        headers = { ...headers, "Authorization": `Bearer ${accessToken}` ,"X-User-Principal-Name": `${email}`}
     }
-    else if(import.meta.env.VITE_ENVIRONMENT === 'local'){ 
-        headers = { ...headers,"X-User-Principal-Name": `test.user@test.com`}
+    else {
+        headers = { ...headers, "X-User-Principal-Name": `test.user@test.com` }
     }
 
     return await fetch(`${import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers })
@@ -569,4 +576,20 @@ export async function fetchCitationFile(filePath: string): Promise<FetchCitation
     }
     const fileResponse: FetchCitationFileResponse = { file_blob: await response.blob() };
     return fileResponse;
+}
+
+export async function getOneDriveAuthConfig(): Promise<OneDriveAuthConfigResponse> {
+
+    const response = await fetchApi('/get-onedrive-auth-config', {
+        method: 'GET'
+    }); 
+
+    const authConfigResponse: OneDriveAuthConfigResponse = await response.json();
+
+    if (response.status > 299 || !response.ok) {
+        console.log(response);
+        throw Error('Failed to fetch cofiguration' + response.statusText);
+    }
+
+    return authConfigResponse;
 }

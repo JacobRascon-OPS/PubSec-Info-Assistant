@@ -28,14 +28,14 @@ export default function App() {
                     <Route path="*" element={<NoPage />} />
                     <Route path="tutor" element={<Tutor />} />
                     <Route path="tda" element={<Tda folderPath={""} tags={[]} />} />
-            </Route>
+                </Route>
             </Routes>
-        </HashRouter>    
+        </HashRouter>
     );
 }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <App />
+            <App />
     </React.StrictMode>
 );

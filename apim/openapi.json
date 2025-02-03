@@ -6,28 +6,33 @@
         "version": "0.1.0"
     },
     "paths": {
-        "/chat": {
-            "post": {
-                "summary": "Chat",
-                "description": "Chat with the bot using a given approach\n\nArgs:\n    request (Request): The incoming request object\n\nReturns:\n    dict: The response containing the chat results\n\nRaises:\n    dict: The error response if an exception occurs during the chat",
-                "operationId": "chat_chat_post",
+        "/health": {
+            "get": {
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health",
+                "description": "Returns the health of the API\n\nReturns:\n    StatusResponse: The health of the API",
+                "operationId": "health_health_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
-                                "schema": {}
+                                "schema": {
+                                    "$ref": "#/components/schemas/StatusResponse"
+                                }
                             }
                         }
                     }
                 }
             }
         },
-        "/getblobclienturl": {
-            "get": {
-                "summary": "Get Blob Client Url",
-                "description": "Get a URL for a file in Blob Storage with SAS token.\n\nThis function generates a Shared Access Signature (SAS) token for accessing a file in Blob Storage.\nThe generated URL includes the SAS token as a query parameter.\n\nReturns:\n    dict: A dictionary containing the URL with the SAS token.",
-                "operationId": "get_blob_client_url_getblobclienturl_get",
+        "/chat": {
+            "post": {
+                "summary": "Chat",
+                "description": "Chat with the bot using a given approach\n\nArgs:\n    request (Request): The incoming request object\n\nReturns:\n    dict: The response containing the chat results\n\nRaises:\n    dict: The error response if an exception occurs during the chat",
+                "operationId": "chat_chat_post",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -285,13 +290,20 @@
                 "operationId": "getHint_getHint_get",
                 "parameters": [
                     {
+                        "name": "question",
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string",
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
                             "title": "Question"
-                        },
-                        "name": "question",
-                        "in": "query"
+                        }
                     }
                 ],
                 "responses": {
@@ -358,31 +370,38 @@
                 "operationId": "process_td_agent_response_process_td_agent_response_get",
                 "parameters": [
                     {
-                        "required": false,
-                        "schema": {
-                            "title": "Retries",
-                            "default": 3
-                        },
                         "name": "retries",
-                        "in": "query"
-                    },
-                    {
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "title": "Delay",
-                            "default": 1000
-                        },
+                            "default": 3,
+                            "title": "Retries"
+                        }
+                    },
+                    {
                         "name": "delay",
-                        "in": "query"
-                    },
-                    {
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "title": "Question"
-                        },
+                            "default": 1000,
+                            "title": "Delay"
+                        }
+                    },
+                    {
                         "name": "question",
-                        "in": "query"
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Question"
+                        }
                     }
                 ],
                 "responses": {
@@ -413,31 +432,38 @@
                 "operationId": "getTdAnalysis_getTdAnalysis_get",
                 "parameters": [
                     {
-                        "required": false,
-                        "schema": {
-                            "title": "Retries",
-                            "default": 3
-                        },
                         "name": "retries",
-                        "in": "query"
-                    },
-                    {
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "title": "Delay",
-                            "default": 1
-                        },
+                            "default": 3,
+                            "title": "Retries"
+                        }
+                    },
+                    {
                         "name": "delay",
-                        "in": "query"
-                    },
-                    {
+                        "in": "query",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "title": "Question"
-                        },
+                            "default": 1,
+                            "title": "Delay"
+                        }
+                    },
+                    {
                         "name": "question",
-                        "in": "query"
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "title": "Question"
+                        }
                     }
                 ],
                 "responses": {
@@ -479,56 +505,19 @@
                 }
             }
         },
-        "/getSolve": {
-            "get": {
-                "summary": "Getsolve",
-                "operationId": "getSolve_getSolve_get",
-                "parameters": [
-                    {
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "title": "Question"
-                        },
-                        "name": "question",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/stream": {
             "get": {
                 "summary": "Stream Response",
                 "operationId": "stream_response_stream_get",
                 "parameters": [
                     {
+                        "name": "question",
+                        "in": "query",
                         "required": true,
                         "schema": {
                             "type": "string",
                             "title": "Question"
-                        },
-                        "name": "question",
-                        "in": "query"
+                        }
                     }
                 ],
                 "responses": {
@@ -559,13 +548,13 @@
                 "operationId": "td_stream_response_tdstream_get",
                 "parameters": [
                     {
+                        "name": "question",
+                        "in": "query",
                         "required": true,
                         "schema": {
                             "type": "string",
                             "title": "Question"
-                        },
-                        "name": "question",
-                        "in": "query"
+                        }
                     }
                 ],
                 "responses": {
@@ -597,13 +586,13 @@
                 "operationId": "stream_agent_response_process_agent_response_get",
                 "parameters": [
                     {
+                        "name": "question",
+                        "in": "query",
                         "required": true,
                         "schema": {
                             "type": "string",
                             "title": "Question"
-                        },
-                        "name": "question",
-                        "in": "query"
+                        }
                     }
                 ],
                 "responses": {
@@ -631,8 +620,88 @@
         "/getFeatureFlags": {
             "get": {
                 "summary": "Get Feature Flags",
-                "description": "Get the feature flag settings for the app.\n\nReturns:\n    dict: A dictionary containing various feature flags for the app.\n        - \"ENABLE_WEB_CHAT\": Flag indicating whether web chat is enabled.\n        - \"ENABLE_UNGROUNDED_CHAT\": Flag indicating whether ungrounded chat is enabled.\n        - \"ENABLE_MATH_ASSISTANT\": Flag indicating whether the math assistant is enabled.\n        - \"ENABLE_TABULAR_DATA_ASSISTANT\": Flag indicating whether the tabular data assistant is enabled.\n        - \"ENABLE_MULTIMEDIA\": Flag indicating whether multimedia is enabled.",
+                "description": "Get the feature flag settings for the app.\n\nReturns:\n    dict: A dictionary containing various feature flags for the app.\n        - \"ENABLE_WEB_CHAT\": Flag indicating whether web chat is enabled.\n        - \"ENABLE_UNGROUNDED_CHAT\": Flag indicating whether ungrounded chat is enabled.\n        - \"ENABLE_MATH_ASSISTANT\": Flag indicating whether the math assistant is enabled.\n        - \"ENABLE_TABULAR_DATA_ASSISTANT\": Flag indicating whether the tabular data assistant is enabled.",
                 "operationId": "get_feature_flags_getFeatureFlags_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/file": {
+            "post": {
+                "summary": "Upload File",
+                "description": "Upload a file to Azure Blob Storage.  \nParameters:  \n- file: The file to upload.\n- file_path: The path to save the file in Blob Storage.\n- tags: The tags to associate with the file.  \nReturns:  \n- response: A message indicating the result of the upload.",
+                "operationId": "upload_file_file_post",
+                "parameters": [
+                    {
+                        "name": "x-user-principal-name",
+                        "in": "header",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "X-User-Principal-Name"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_upload_file_file_post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-file": {
+            "post": {
+                "summary": "Get File",
+                "operationId": "get_file_get_file_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-onedrive-auth-config": {
+            "get": {
+                "summary": "Get Onedrive Auth Config",
+                "operationId": "get_onedrive_auth_config_get_onedrive_auth_config_get",
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -662,6 +731,29 @@
                 ],
                 "title": "Body_posttd_posttd_post"
             },
+            "Body_upload_file_file_post": {
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "title": "File"
+                    },
+                    "file_path": {
+                        "type": "string",
+                        "title": "File Path"
+                    },
+                    "tags": {
+                        "type": "string",
+                        "title": "Tags"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "file",
+                    "file_path"
+                ],
+                "title": "Body_upload_file_file_post"
+            },
             "HTTPValidationError": {
                 "properties": {
                     "detail": {
@@ -674,6 +766,30 @@
                 },
                 "type": "object",
                 "title": "HTTPValidationError"
+            },
+            "StatusResponse": {
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    },
+                    "uptime_seconds": {
+                        "type": "number",
+                        "title": "Uptime Seconds"
+                    },
+                    "version": {
+                        "type": "string",
+                        "title": "Version"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "status",
+                    "uptime_seconds",
+                    "version"
+                ],
+                "title": "StatusResponse",
+                "description": "The response model for the health check endpoint"
             },
             "ValidationError": {
                 "properties": {

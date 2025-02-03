@@ -9,4 +9,4 @@ def get_user(request : Request) -> str:
             detail=user_header +  " header missing",
         )
     login_user = request.headers[user_header]
-    return login_user
+    return login_user.lower()
