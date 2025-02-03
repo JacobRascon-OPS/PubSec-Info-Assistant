@@ -277,25 +277,23 @@ chat_approaches = {
 }
 
 IS_READY = True
-from contextlib import asynccontextmanager
-
 
 dependencies = []
-usernameheader = APIKeyHeader(name=user_header)
-async def azure_scheme(username: str = Depends(usernameheader)):
-    print("Username " + username)
-    if username == None or username == "":
-        username = "anonymous"
-    #    raise HTTPException(status_code=403, detail="Username must be provided")
-    return username
-dependencies.append(Security(azure_scheme))
+def user_name_header(request: Request, x_user_principal_name: str = Header(default='')):
+    if request.url.path == "/":
+        return ""
+    if not x_user_principal_name or x_user_principal_name == '':
+        raise HTTPException(status_code=400, detail="X-User-Principal-Name missing")
+    return x_user_principal_name
+
+dependencies.append(Depends(user_name_header))
 
 app = FastAPI(
     title="HHS Chat GPT Web API",
     description="A Python API to serve as Backend For the Information Assistant Web App",
     version="0.1.0",
     docs_url="/docs",
-    dependencies=[]
+    dependencies=dependencies
 )
 
 

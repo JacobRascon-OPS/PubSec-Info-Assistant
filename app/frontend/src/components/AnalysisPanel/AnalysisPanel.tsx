@@ -11,7 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import styles from "./AnalysisPanel.module.css";
 
 import { SupportingContent } from "../SupportingContent";
-import { ChatResponse, ActiveCitation, getCitationObj, fetchCitationFile, FetchCitationFileResponse } from "../../api";
+import { ChatResponse, ActiveCitation, getCitationObj, fetchCitationFile, fetchApi } from "../../api";
 import { AnalysisPanelTabs } from "./AnalysisPanelTabs";
 import React from "react";
 
@@ -125,7 +125,7 @@ useEffect(() => {
             if (!citationURL) {
                 throw new Error('Citation URL is undefined');
             }
-            const response = await fetch(citationURL);
+            const response = await fetchApi(citationURL);
             const content = await response.text();
             setMarkdownContent(content);
         } catch (error) {
@@ -148,7 +148,7 @@ useEffect(() => {
             if (!citationURL) {
                 throw new Error('Citation URL is undefined');
             }
-            const response = await fetch(citationURL);
+            const response = await fetchApi(citationURL);
             const content = await response.text();
             setPlainTextContent(content);
         } catch (error) {

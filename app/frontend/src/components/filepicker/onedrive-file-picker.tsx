@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Cloud48Regular, SpinnerIos16Filled } from "@fluentui/react-icons";
 import styles from "./file-picker.module.css";
 import { FilesList } from "./files-list";
-import { getOneDriveAuthConfig, logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";
+import { fetchApi, getOneDriveAuthConfig, logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";
 import { getToken } from './auth'
 import { Configuration, IPublicClientApplication, PublicClientApplication } from "@azure/msal-browser";
 
@@ -22,8 +22,6 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   const [uploadStarted, setUploadStarted] = useState(false);
   const [msalInstance, setMsalInstace] = useState<IPublicClientApplication | null>(null)
   const [baseUrl, setBaseUrl] = useState<string | null>(null);
-
-
 
   const channelId = nanoid(); // Always use a unique id for the channel when hosting the picker.
   let win: Window | null;
@@ -365,7 +363,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
           }
 
           try {
-            const response = await fetch("/file", {
+            const response = await fetchApi("/file", {
               method: "POST",
               body: data,
             });

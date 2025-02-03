@@ -25,7 +25,7 @@ const Content = () => {
     const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
     const [selectedTags, setSelectedTags] = useState<string[] | undefined>(undefined);
     const [selectedApproach, setSelectedApproach] = useState<number | undefined>(undefined);
-    const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
+    const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(true);
 
     const onSelectedKeyChanged = (selectedFolder: string[]) => {
         setSelectedKey(selectedFolder[0]);
