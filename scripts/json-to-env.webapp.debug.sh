@@ -167,7 +167,16 @@ jq -r  '
         {
             "path": "AZURE_SEARCH_AUDIENCE",
             "env_var": "AZURE_SEARCH_AUDIENCE"
+        },
+        {
+            "path": "ONEDRIVE_AZURE_AD_CLIENTID",
+            "env_var": "ONEDRIVE_AZURE_AD_CLIENTID"
+        },
+        {
+            "path": "ONEDRIVE_AZURE_AD_TENANTID",
+            "env_var": "ONEDRIVE_AZURE_AD_TENANTID"
         }
+        
     ]
         as $env_vars_to_extract
     |
@@ -204,6 +213,9 @@ jq -r  '
     echo "ENABLE_TABULAR_DATA_ASSISTANT=$ENABLE_TABULAR_DATA_ASSISTANT"
     echo "LOCAL_DEBUG=true"
     echo "USE_SEMANTIC_RERANKER=$TF_VAR_use_semantic_reranker"
+    echo "ONEDRIVE_AZURE_AD_CLIENTID='$ONEDRIVE_AZURE_AD_CLIENTID'"
+    echo "ONEDRIVE_AZURE_AD_TENANTID='$ONEDRIVE_AZURE_AD_TENANTID'"
+    echo "ONEDRIVE_BASE_URL="$ONEDRIVE_BASE_URL""
 
 if [ -n "${IN_AUTOMATION}" ]; then
     if [ -n "${AZURE_ENVIRONMENT}" ] && [[ "$AZURE_ENVIRONMENT" == "AzureUSGovernment" ]]; then

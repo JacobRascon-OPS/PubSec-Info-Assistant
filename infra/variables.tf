@@ -668,3 +668,8 @@ variable "bingSearchSku" {
   type = string
   default = "S1"
 }
+
+variable "oneDriveBaseUrl" {
+  type=string
+  default=""
+}

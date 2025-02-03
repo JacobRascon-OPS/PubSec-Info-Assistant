@@ -227,3 +227,10 @@ export type FetchCitationFileResponse = {
     file_blob: Blob;
     error?: string;
 }
+
+export type OneDriveAuthConfigResponse = {
+    TENANT_ID: string,
+    CLIENT_ID: string,
+    BASE_URL: string,
+    error?: string
+}

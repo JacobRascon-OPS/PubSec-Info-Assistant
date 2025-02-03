@@ -60,6 +60,7 @@
                 "watch"
             ],
             "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/scripts/environments/frontend.debug.env",
         },
         {
             "name": "Frontend: build",

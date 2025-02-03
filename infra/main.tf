@@ -410,7 +410,10 @@ module "webapp" {
     ENABLE_MATH_ASSISTANT                   = var.enableMathAssitant
     ENABLE_TABULAR_DATA_ASSISTANT           = var.enableTabularDataAssistant
     MAX_CSV_FILE_SIZE                       = var.maxCsvFileSize
-    AZURE_AI_CREDENTIAL_DOMAIN               = var.azure_ai_private_link_domain
+    AZURE_AI_CREDENTIAL_DOMAIN              = var.azure_ai_private_link_domain
+    ONEDRIVE_AZURE_AD_TENANTID              = data.azurerm_client_config.current.tenant_id
+    ONEDRIVE_AZURE_AD_CLIENTID              = module.entraObjects.azure_ad_web_app_client_id
+    ONEDRIVE_BASE_URL                       = var.oneDriveBaseUrl
   }
 
   aadClientId = module.entraObjects.azure_ad_web_app_client_id

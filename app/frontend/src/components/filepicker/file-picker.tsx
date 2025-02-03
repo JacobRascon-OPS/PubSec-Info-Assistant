@@ -8,8 +8,7 @@ import { SpinnerIos16Filled } from "@fluentui/react-icons";
 import { DropZone } from "./drop-zone";  
 import styles from "./file-picker.module.css";  
 import { FilesList } from "./files-list";  
-import { logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";  
-import { submitFile } from "../../api/apiaddons";
+import { fetchApi, logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";  
 interface Props {  
   folderPath: string;  
   tags: string[];  
@@ -61,13 +60,11 @@ const FilePicker = ({ folderPath, tags }: Props) => {
         }
   
         try {  
-          /* 
-          const response = await fetch("/file", {  
+          
+          const response = await fetchApi("/file", {  
             method: "POST",  
             body: data,  
           });  
-          */  
-         const response = await submitFile(file, filePath,  tags.map(encodeURIComponent).join(","))
   
           if (!response.ok) {  
             throw new Error(`Failed to upload file: ${filePath}`);  
