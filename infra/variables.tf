@@ -669,6 +669,18 @@ variable "bingSearchSku" {
   default = "S1"
 }
 
+variable "retention_days" {  
+  description = "Number of days after which blobs will be deleted"  
+  type        = number 
+  default     = 1
+}  
+  
+variable "container_prefixes" {  
+  description = "List of container prefixes for blob matching"  
+  type        = list(string)  
+  default     = [ "upload/" ]
+}
+ 
 variable "oneDriveBaseUrl" {
   type=string
   default=""

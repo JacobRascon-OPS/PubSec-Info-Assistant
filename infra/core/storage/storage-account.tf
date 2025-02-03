@@ -302,3 +302,22 @@ resource "azurerm_storage_blob" "config" {
   type                   = "Block"
   source                 = "sp_config/config.json"
 }
+
+resource "azurerm_storage_management_policy" "storage_retention_policy" {
+  storage_account_id = azurerm_storage_account.storage.id
+  rule {
+    name    = "24HourRetentionPolicy"
+    enabled = true
+
+    filters {
+      blob_types   = ["blockBlob"]
+      prefix_match = var.container_prefixes
+    }
+
+    actions {
+      base_blob {
+        delete_after_days_since_creation_greater_than = var.retention_days
+      }
+    }
+  }
+}
