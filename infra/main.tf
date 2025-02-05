@@ -919,6 +919,10 @@ module "apim" {
     {
       operationId="chat_chat_post"
       policyContent=file("../apim/policies/chat.xml")
+    },
+    {
+      operationId= "upload_file_file_post"
+      policyContent= file("../apim/policies/uploadFile.xml")
     }
   ]
   nameValues = [
@@ -929,8 +933,13 @@ module "apim" {
     {
       name  = "StorageTableName",
       value = "hhsgptlogs"
+    },
+    {
+      name = "FileUploadLogTable",
+      value = "hhsuploadfileslogs"
     }
   ]
+
   policyFragments = [
     {
       name    = "hhs-gpt-read-request"
@@ -940,10 +949,17 @@ module "apim" {
       name    = "hhs-gpt-read-response"
       fragmentContent = file("../apim/policy-fragments/hhs-gpt-read-response.xml")
     },
-
     {
       name    = "hhs-gpt-log-entry"
       fragmentContent = file("../apim/policy-fragments/hhs-gpt-log-entry.xml")
+    },
+    {
+      name    = "hhs-upload-file-log-entry"
+      fragmentContent = file("../apim/policy-fragments/hhs-upload-file-log-entry.xml")
+    },
+    {
+      name    = "hhs-upload-file-request"
+      fragmentContent = file("../apim/policy-fragments/hhs-upload-file-request.xml")
     }
   ]
 }
