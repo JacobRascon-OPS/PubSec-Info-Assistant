@@ -13,7 +13,7 @@ module "cog_service_key" {
   source                        = "../../security/keyvaultSecret"
   arm_template_schema_mgmt_api  = var.arm_template_schema_mgmt_api
   key_vault_name                = var.key_vault_name
-  resourceGroupName             = var.resourceGroupName
+  resourceGroupName             = var.serviceResourceGroupName
   secret_name                   = "AZURE-AI-KEY"
   secret_value                  = azurerm_cognitive_account.cognitiveService.primary_access_key
   alias                         = "aisvckey"
@@ -26,14 +26,14 @@ data "azurerm_subnet" "subnet" {
   count                = var.is_secure_mode ? 1 : 0
   name                 = var.subnet_name
   virtual_network_name = var.vnet_name
-  resource_group_name  = var.resourceGroupName
+  resource_group_name  = var.networkResourceGroupName
 }
 
 resource "azurerm_private_endpoint" "accountPrivateEndpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
   custom_network_interface_name = "${var.name}-nic"
 

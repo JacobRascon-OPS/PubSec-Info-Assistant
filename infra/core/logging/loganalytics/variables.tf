@@ -24,6 +24,14 @@ variable "resourceGroupName" {
   type    = string
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+}
+
+variable "serviceResourceGroupName" {
+  type    = string
+}
+
 variable "logWorkbookName" {
   description = "The name of the log workbook"
   type        = string

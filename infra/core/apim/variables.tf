@@ -30,6 +30,11 @@ variable "resourceGroupName" {
   type=string
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
 variable "policyFragments" {
   type = list
   

@@ -16,7 +16,7 @@ variable "skuName" {
   default = "PerGB2018"
 }
 
-variable "resourceGroupName" {
+variable "serviceResourceGroupName" {
   type    = string
 }
 

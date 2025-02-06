@@ -86,8 +86,23 @@ variable "queueNames" {
   default = []
 }
 
+variable "tableNames" {
+  type = list(string)
+  default = []
+}
+
 variable "resourceGroupName" {
   type    = string
+  default = ""
+}
+
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
+  type = string
   default = ""
 }
 

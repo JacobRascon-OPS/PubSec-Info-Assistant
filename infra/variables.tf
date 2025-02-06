@@ -8,7 +8,17 @@ variable "location" {
   type        = string
 }
 
-variable "resourceGroupName" {
+variable "applicationResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
   type    = string
   default = ""
 }
@@ -106,7 +116,7 @@ variable "azure_acr_domain" {
 
 variable "use_semantic_reranker" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "azure_storage_domain" {

@@ -234,7 +234,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_logs_usgov" {
 
 data "azurerm_key_vault" "existing" {
   name                = var.keyVaultName
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.serviceResourceGroupName
 }
 
 resource "azurerm_key_vault_access_policy" "policy" {
@@ -253,14 +253,14 @@ data "azurerm_subnet" "subnet" {
   count                = var.is_secure_mode ? 1 : 0
   name                 = var.subnet_name
   virtual_network_name = var.vnet_name
-  resource_group_name  = var.resourceGroupName
+  resource_group_name  = var.networkResourceGroupName
 }
 
 resource "azurerm_private_endpoint" "backendPrivateEndpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
   tags                          = var.tags
   custom_network_interface_name = "${var.name}-nic"

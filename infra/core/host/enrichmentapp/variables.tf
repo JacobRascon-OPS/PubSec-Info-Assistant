@@ -34,6 +34,16 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
+  type = string
+  default = ""
+}
+
 variable "storageAccountId" {
   type    = string
   default = ""

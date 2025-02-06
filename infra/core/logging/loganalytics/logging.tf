@@ -2,7 +2,7 @@
 resource "azurerm_log_analytics_workspace" "logAnalytics" {
   name                = var.logAnalyticsName
   location            = var.location
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.serviceResourceGroupName
   sku                 = var.skuName
   tags                = var.tags
   retention_in_days   = 30
@@ -11,7 +11,7 @@ resource "azurerm_log_analytics_workspace" "logAnalytics" {
 resource "azurerm_application_insights" "applicationInsights" {
   name                = var.applicationInsightsName
   location            = var.location
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.serviceResourceGroupName
   application_type    = "web"
   tags                = var.tags
   workspace_id        = azurerm_log_analytics_workspace.logAnalytics.id
@@ -35,14 +35,14 @@ resource "azurerm_monitor_diagnostic_setting" "nsg_diagnostic_logs" {
 resource "azurerm_monitor_private_link_scope" "ampls" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "${var.privateLinkScopeName}-pls"
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
 }
 
 // add scoped resource for Log Analytics Workspace
 resource "azurerm_monitor_private_link_scoped_service" "ampl-ss_log_analytics" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "${var.privateLinkScopeName}-law-connection"
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   scope_name          = azurerm_monitor_private_link_scope.ampls[0].name
   linked_resource_id  = azurerm_log_analytics_workspace.logAnalytics.id
 }
@@ -52,7 +52,7 @@ resource "azurerm_monitor_private_link_scoped_service" "ampl-ss_log_analytics" {
 resource "azurerm_monitor_private_link_scoped_service" "ampl_ss_app_insights" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "${var.privateLinkScopeName}-appInsights-connection"
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   scope_name          = azurerm_monitor_private_link_scope.ampls[0].name
   linked_resource_id  = azurerm_application_insights.applicationInsights.id
 }
@@ -61,7 +61,7 @@ data "azurerm_subnet" "subnet" {
   count                = var.is_secure_mode ? 1 : 0
   name                 = var.subnet_name
   virtual_network_name = var.vnet_name
-  resource_group_name  = var.resourceGroupName
+  resource_group_name  = var.networkResourceGroupName
 }
 
 // add private endpoint for azure monitor - metrics, app insights, log analytics
@@ -69,7 +69,7 @@ resource "azurerm_private_endpoint" "ampls" {
   count                             = var.is_secure_mode ? 1 : 0
   name                              = "${var.privateLinkScopeName}-private-endpoint"
   location                          = var.location
-  resource_group_name               = var.resourceGroupName
+  resource_group_name               = var.networkResourceGroupName
   subnet_id                         = data.azurerm_subnet.subnet[0].id
   custom_network_interface_name     = "${var.privateLinkScopeName}-nic"
 
@@ -95,7 +95,7 @@ resource "azurerm_private_endpoint" "ampls" {
 resource "azurerm_private_dns_zone" "monitor" {
   count               = var.is_secure_mode ? 1 : 0
   name                = var.privateDnsZoneNameMonitor
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   tags                = var.tags
 }
 
@@ -103,7 +103,7 @@ resource "azurerm_private_dns_a_record" "monitor_api" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "api"
   zone_name           = azurerm_private_dns_zone.monitor[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 7)]
 }
@@ -112,7 +112,7 @@ resource "azurerm_private_dns_a_record" "monitor_global" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "global.in.ai"
   zone_name           = azurerm_private_dns_zone.monitor[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 8)]
 }
@@ -121,7 +121,7 @@ resource "azurerm_private_dns_a_record" "monitor_profiler" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "profiler"
   zone_name           = azurerm_private_dns_zone.monitor[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 9)]
 }
@@ -130,7 +130,7 @@ resource "azurerm_private_dns_a_record" "monitor_live" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "live"
   zone_name           = azurerm_private_dns_zone.monitor[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 10)]
 }
@@ -139,7 +139,7 @@ resource "azurerm_private_dns_a_record" "monitor_snapshot" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "snapshot"
   zone_name           = azurerm_private_dns_zone.monitor[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 11)]
 }
@@ -147,7 +147,7 @@ resource "azurerm_private_dns_a_record" "monitor_snapshot" {
 resource "azurerm_private_dns_zone_virtual_network_link" "monitor-net" {
   count               = var.is_secure_mode ? 1 : 0
   name                  = "pl-monitor-infoasst-net"
-  resource_group_name   = var.resourceGroupName
+  resource_group_name   = var.networkResourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.monitor[0].name
   virtual_network_id    = var.vnet_id
 }
@@ -155,14 +155,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "monitor-net" {
 resource "azurerm_private_dns_zone" "oms" {
   count               = var.is_secure_mode ? 1 : 0
   name                = var.privateDnsZoneNameOms
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
 }
 
 resource "azurerm_private_dns_a_record" "oms_law_id" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "pl-oms-law-infoasst-id"
   zone_name           = azurerm_private_dns_zone.oms[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 4)]
 }
@@ -170,7 +170,7 @@ resource "azurerm_private_dns_a_record" "oms_law_id" {
 resource "azurerm_private_dns_zone_virtual_network_link" "oms-net" {
   count               = var.is_secure_mode ? 1 : 0
   name                  = "pl-oms-infoasst-net"
-  resource_group_name   = var.resourceGroupName
+  resource_group_name   = var.networkResourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.oms[0].name
   virtual_network_id    = var.vnet_id
 }
@@ -178,14 +178,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "oms-net" {
 resource "azurerm_private_dns_zone" "ods" {
   count               = var.is_secure_mode ? 1 : 0
   name                = var.privateDnSZoneNameOds
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
 }
 
 resource "azurerm_private_dns_a_record" "ods_law_id" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "pl_ods_law_infoasst_id"
   zone_name           = azurerm_private_dns_zone.ods[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 5)]
 }
@@ -193,7 +193,7 @@ resource "azurerm_private_dns_a_record" "ods_law_id" {
 resource "azurerm_private_dns_zone_virtual_network_link" "ods-net" {
   count               = var.is_secure_mode ? 1 : 0
   name                  = "pl-ods-infoasst-net"
-  resource_group_name   = var.resourceGroupName
+  resource_group_name   = var.networkResourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.ods[0].name
   virtual_network_id    = var.vnet_id
 }
@@ -201,14 +201,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "ods-net" {
 resource "azurerm_private_dns_zone" "agentsvc" {
   count               = var.is_secure_mode ? 1 : 0
   name                = var.privateDnsZoneNameAutomation
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
 }
 
 resource "azurerm_private_dns_a_record" "agentsvc_law_id" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "pl_agentsvc_law_infoasst_id"
   zone_name           = azurerm_private_dns_zone.agentsvc[0].name
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 6)]
 }
@@ -216,7 +216,7 @@ resource "azurerm_private_dns_a_record" "agentsvc_law_id" {
 resource "azurerm_private_dns_zone_virtual_network_link" "agentsvc-net" {
   count               = var.is_secure_mode ? 1 : 0
   name                  = "pl-agentsvc-infoasst-net"
-  resource_group_name   = var.resourceGroupName
+  resource_group_name   = var.networkResourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.agentsvc[0].name
   virtual_network_id    = var.vnet_id
 }
@@ -225,7 +225,7 @@ resource "azurerm_private_dns_a_record" "blob_scadvisorcontentpld" {
   count               = var.is_secure_mode ? 1 : 0
   name                = "scadvisorcontentpl"
   zone_name           = var.privateDnsZoneNameBlob
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
   ttl                 = 3600
   records             = [cidrhost(var.ampls_subnet_CIDR, 12)]
 }

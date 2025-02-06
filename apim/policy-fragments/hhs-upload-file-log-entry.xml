@@ -12,13 +12,11 @@
             @{
                 var accountName = context.Variables.GetValueOrDefault<string>("accountName"); 
                 var tableName = context.Variables.GetValueOrDefault<string>("tableName"); 
-                return $"https://{accountName}.table.core.windows.net/{tableName}"
+                return $"https://{accountName}.table.core.windows.net/{tableName}";
             }
         </set-url>
         <!-- Method for Request --> 
-        <set-method>
-            POST
-        </set-method>
+        <set-method>POST</set-method>
         <!-- Headers for Request --> 
         <set-header name="Authorization" exists-action="override">
             <value>@("Bearer " + context.Variables.GetValueOrDefault<string>("accessToken"))</value>
@@ -35,15 +33,13 @@
         <!-- Body for Request --> 
         <set-body>
             @{
-                <!-- Body Data --> 
                 var responseDetails = new {
                     RowKey=context.Variables.GetValueOrDefault<string>("rowKey"),
                     UserName = context.Variables.GetValueOrDefault<string>("userName"),
                     UserEmail = context.Variables.GetValueOrDefault<string>("userEmail"),
                     FilePath = context.Variables.GetValueOrDefault<string>("filePath"),
                     UploadSource = context.Variables.GetValueOrDefault<string>("uploadSource")
-                };
-                <!-- serializing the Body and returning it --> 
+                }; 
                 return Newtonsoft.Json.JsonConvert.SerializeObject(responseDetails);
             }
         </set-body>  

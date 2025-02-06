@@ -30,6 +30,11 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
 variable "key_vault_name" { 
   type = string
 }

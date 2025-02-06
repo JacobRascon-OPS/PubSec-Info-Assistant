@@ -40,7 +40,7 @@ output "BACKEND_NAME" {
 }
 
 output "RESOURCE_GROUP_NAME" {
-  value = azurerm_resource_group.rg.name
+  value = azurerm_resource_group.app_rg.name
 }
 
 output "AZURE_OPENAI_CHAT_GPT_DEPLOYMENT" {
@@ -48,7 +48,7 @@ output "AZURE_OPENAI_CHAT_GPT_DEPLOYMENT" {
 }
 
 output "AZURE_OPENAI_RESOURCE_GROUP" {
-  value = var.useExistingAOAIService ? var.azureOpenAIResourceGroup : azurerm_resource_group.rg.name
+  value = var.useExistingAOAIService ? var.azureOpenAIResourceGroup : azurerm_resource_group.app_rg.name
 }
 
 output "AZURE_FUNCTION_APP_NAME" {
@@ -193,6 +193,7 @@ output "APIM_URI" {
 
 output "APIM_SUBSCRIPTION_KEY" {
   value = module.apim.apim_subscription_key
+  sensitive = true
 }
 
 output "CONTAINER_REGISTRY" {
