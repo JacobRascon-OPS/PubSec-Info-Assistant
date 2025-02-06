@@ -1,0 +1,16 @@
+<fragment>
+    <!-- setting file path -->
+    <set-variable name="filePath" value="@(context.Request.Body.As<JObject>().Value<string>("file_path"))" />
+    <!-- setting userName -->
+    <set-variable name="userName" value="@{
+        var jwt = context.Request.Headers.GetValueOrDefault("Authorization").AsJwt();
+        return jwt?.Claims.GetValueOrDefault("name") ?? "unknown";
+    }" />
+    <!-- setting userEmail -->
+	<set-variable name="userEmail" value="@{
+        var jwt = context.Request.Headers.GetValueOrDefault("Authorization").AsJwt();
+        return jwt?.Claims.GetValueOrDefault("email") ?? "unknown";
+    }" />
+    <!-- setting the upload Source -->
+    <set-variable name="uploadSource" value="@(context.Request.Body.As<JObject>().Value<string>("uploadSource"))" />
+</fragment>

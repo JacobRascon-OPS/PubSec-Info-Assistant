@@ -36,6 +36,7 @@
                    PartitionKey=context.Variables.GetValueOrDefault<string>("partitionKey"),
                    RowKey=context.Variables.GetValueOrDefault<string>("rowKey"),
                    UserName=context.Variables.GetValueOrDefault<string>("userName"),
+				   UserEmail=context.Variables.GetValueOrDefault<string>("userEmail"),
                    Request=context.Variables.GetValueOrDefault<string>("requestBody"),
                    Response=context.Variables.GetValueOrDefault<string>("responseBody"),
                    RequestTime=context.Variables.GetValueOrDefault<string>("requestTime"),

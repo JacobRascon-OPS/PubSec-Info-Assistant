@@ -357,6 +357,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
           // Append file and other data to FormData  
           data.append("file", file);
           data.append("file_path", filePath);
+          data.append("uploadSource", `${indexedFile.file["@sharePoint.endpoint"]}/drives/${indexedFile.file.parentReference.driveId}/items/${indexedFile.file.id}`);
 
           if (tags.length > 0) {
             data.append("tags", tags.map(encodeURIComponent).join(","));
