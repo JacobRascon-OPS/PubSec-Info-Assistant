@@ -67,3 +67,21 @@ variable "operationPolicies" {
   type = list
   default = []
 }
+
+
+variable "is_secure_mode" {
+  type    = bool
+  default = false
+}
+
+variable "private_dns_zone_ids" {
+  type = set(string)
+}
+
+variable "vnet_name" {
+  type = string
+}
+
+variable "subnet_name" {
+  type = string
+}

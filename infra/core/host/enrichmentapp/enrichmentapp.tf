@@ -231,7 +231,7 @@ resource "azurerm_private_endpoint" "privateEnrichmentEndpoint" {
   location                      = var.location
   resource_group_name           = var.resourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoasstenrichnic"
+  custom_network_interface_name = "${var.name}-nic"
 
   private_dns_zone_group {
     name = "privatednszonegroup"

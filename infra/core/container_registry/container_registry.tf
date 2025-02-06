@@ -2,7 +2,7 @@ resource "azurerm_container_registry" "acr" {
   name                = lower(var.name)
   resource_group_name = var.resourceGroupName
   location            = var.location
-  sku                 = "Standard"  // Premium is required for networking features
+  sku                 = "Premium"  // Premium is required for networking features
   admin_enabled       = true       // Enables the admin account for Docker login
 
   public_network_access_enabled = var.is_secure_mode ? false : true
@@ -22,7 +22,7 @@ resource "azurerm_private_endpoint" "ContainerRegistryPrivateEndpoint" {
   resource_group_name           = var.resourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
   tags                          = var.tags
-  custom_network_interface_name = "infoasstacrnic"
+  custom_network_interface_name = "${var.name}-nic"
 
   private_service_connection {
     name                            = "${var.name}-private-link-service-connection"

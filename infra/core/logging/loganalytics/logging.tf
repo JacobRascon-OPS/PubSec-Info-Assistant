@@ -71,7 +71,7 @@ resource "azurerm_private_endpoint" "ampls" {
   location                          = var.location
   resource_group_name               = var.resourceGroupName
   subnet_id                         = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name     = "infoasstamplsnic"
+  custom_network_interface_name     = "${var.privateLinkScopeName}-nic"
 
   private_service_connection {
     name                            = "${var.privateLinkScopeName}-privateserviceconnection"
@@ -146,7 +146,7 @@ resource "azurerm_private_dns_a_record" "monitor_snapshot" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "monitor-net" {
   count               = var.is_secure_mode ? 1 : 0
-  name                  = "infoasst-pl-monitor-net"
+  name                  = "pl-monitor-infoasst-net"
   resource_group_name   = var.resourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.monitor[0].name
   virtual_network_id    = var.vnet_id
@@ -160,7 +160,7 @@ resource "azurerm_private_dns_zone" "oms" {
 
 resource "azurerm_private_dns_a_record" "oms_law_id" {
   count               = var.is_secure_mode ? 1 : 0
-  name                = "infoasst-pl-oms-law-id"
+  name                = "pl-oms-law-infoasst-id"
   zone_name           = azurerm_private_dns_zone.oms[0].name
   resource_group_name = var.resourceGroupName
   ttl                 = 3600
@@ -169,7 +169,7 @@ resource "azurerm_private_dns_a_record" "oms_law_id" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "oms-net" {
   count               = var.is_secure_mode ? 1 : 0
-  name                  = "infoasst-pl-oms-net"
+  name                  = "pl-oms-infoasst-net"
   resource_group_name   = var.resourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.oms[0].name
   virtual_network_id    = var.vnet_id
@@ -183,7 +183,7 @@ resource "azurerm_private_dns_zone" "ods" {
 
 resource "azurerm_private_dns_a_record" "ods_law_id" {
   count               = var.is_secure_mode ? 1 : 0
-  name                = "infoasst_pl_ods_law_id"
+  name                = "pl_ods_law_infoasst_id"
   zone_name           = azurerm_private_dns_zone.ods[0].name
   resource_group_name = var.resourceGroupName
   ttl                 = 3600
@@ -192,7 +192,7 @@ resource "azurerm_private_dns_a_record" "ods_law_id" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "ods-net" {
   count               = var.is_secure_mode ? 1 : 0
-  name                  = "infoasst-pl-ods-net"
+  name                  = "pl-ods-infoasst-net"
   resource_group_name   = var.resourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.ods[0].name
   virtual_network_id    = var.vnet_id
@@ -206,7 +206,7 @@ resource "azurerm_private_dns_zone" "agentsvc" {
 
 resource "azurerm_private_dns_a_record" "agentsvc_law_id" {
   count               = var.is_secure_mode ? 1 : 0
-  name                = "infoasst_pl_agentsvc_law_id"
+  name                = "pl_agentsvc_law_infoasst_id"
   zone_name           = azurerm_private_dns_zone.agentsvc[0].name
   resource_group_name = var.resourceGroupName
   ttl                 = 3600
@@ -215,7 +215,7 @@ resource "azurerm_private_dns_a_record" "agentsvc_law_id" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "agentsvc-net" {
   count               = var.is_secure_mode ? 1 : 0
-  name                  = "infoasst-pl-agentsvc-net"
+  name                  = "pl-agentsvc-infoasst-net"
   resource_group_name   = var.resourceGroupName
   private_dns_zone_name = azurerm_private_dns_zone.agentsvc[0].name
   virtual_network_id    = var.vnet_id

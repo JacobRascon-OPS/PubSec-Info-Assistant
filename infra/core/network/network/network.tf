@@ -49,6 +49,7 @@ resource "azurerm_resource_group_template_deployment" "vnet_w_subnets" {
     "subnet_AzureOpenAI_CIDR"   = { value = "${var.snetAzureOpenAICIDR}" },
     "subnet_Acr_CIDR"           = { value = "${var.snetACRCIDR}" },
     "subnet_Dns_CIDR"           = { value = "${var.snetDnsCIDR}" },
+    "subnet_Apim_CIDR"          = { value = "${var.snetApimCIDR}" },
     "privateEndpointNetworkPoliciesStatus" = { value = "${var.azure_environment == "AzureUSGovernment" ? "Disabled" : "Enabled"}" },
     "privateLinkServiceNetworkPoliciesStatus" = { value = "${var.azure_environment == "AzureUSGovernment" ? "Disabled" : "Enabled"}" },
   })
@@ -143,6 +144,12 @@ data "azurerm_subnet" "acr" {
   resource_group_name  = var.resourceGroupName
 }
 
+data "azurerm_subnet" "apim" {
+  depends_on = [ azurerm_resource_group_template_deployment.vnet_w_subnets ]
+  name                 = "apim"
+  virtual_network_name = var.vnet_name
+  resource_group_name  = var.resourceGroupName
+}
 
 resource "azurerm_private_dns_resolver" "private_dns_resolver" {
     name                = var.dns_resolver_name

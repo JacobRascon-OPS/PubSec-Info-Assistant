@@ -14,6 +14,34 @@ resource "azurerm_api_management" "apim" {
   }
 }
 
+data "azurerm_subnet" "subnet" {
+  count                = var.is_secure_mode ? 1 : 0
+  name                 = var.subnet_name
+  virtual_network_name = var.vnet_name
+  resource_group_name  = var.resourceGroupName
+}
+
+resource "azurerm_private_endpoint" "cosmosPrivateEndpoint" {
+  count                         = var.is_secure_mode ? 1 : 0
+  name                          = "${var.name}-private-endpoint"
+  location                      = var.location
+  resource_group_name           = var.resourceGroupName
+  subnet_id                     = data.azurerm_subnet.subnet[0].id
+  custom_network_interface_name = "${var.name}-nic"
+
+  private_service_connection {
+    name                           = "${var.name}-private-link-service-connection"
+    private_connection_resource_id = azurerm_api_management.apim.id
+    is_manual_connection           = false
+    subresource_names              = ["Gateway"]
+    
+  }
+  private_dns_zone_group {
+    name                 = "${var.name}PrivateDnsZoneGroup"
+    private_dns_zone_ids = var.private_dns_zone_ids
+  }
+}
+
 resource "azurerm_api_management_product" "unlimited" {
   product_id            = "unlimited"
   api_management_name   = azurerm_api_management.apim.name

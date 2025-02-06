@@ -73,7 +73,7 @@ resource "azurerm_private_endpoint" "openaiPrivateEndpoint" {
   location                      = var.location
   resource_group_name           = var.resourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoasstaoainic"
+  custom_network_interface_name = "${var.name}-nic"
 
   private_service_connection {
     name                            = "cognitiveAccount"
