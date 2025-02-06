@@ -13,6 +13,4 @@
     }" />
     <!-- setting the upload Source -->
     <set-variable name="uploadSource" value="@(context.Request.Body.As<JObject>().Value<string>("uploadSource"))" />
-    <!-- setting the tags -->
-    <set-variable name="tags" value="@(context.Request.Body.As<JObject>().Value<string>("tags")) ?? string.Empty"/>
 </fragment>
