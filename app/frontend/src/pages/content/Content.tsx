@@ -129,6 +129,7 @@ const Content = () => {
                             {isLocalFileSelection && <FilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                             {!isLocalFileSelection && <OneDriveFilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                         </div>
+                        <span className={styles.EmptyObjectivesListItemText}>After they have been uploaded, files may not be avaliable to the LLM for a few minutes while they are processed</span>
                     </div>
                 </PivotItem>
                 <PivotItem headerText="Upload Status" aria-label="Upload Status Tab">
