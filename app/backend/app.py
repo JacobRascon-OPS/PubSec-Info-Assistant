@@ -99,6 +99,13 @@ ENV = {
     "ONEDRIVE_AZURE_AD_TENANTID":"",
     "ONEDRIVE_BASE_URL":""
     }
+NEW_ENV = {
+        "ENABLE_LOCAL_FILES": "false",
+        "ENABLE_FILE_TAGS": "false",
+        "ENABLE_FILE_FOLDERS": "false",
+    }
+ENV.update(NEW_ENV)
+
 
 for key, value in ENV.items():
     new_value = os.getenv(key)
@@ -881,6 +888,9 @@ async def get_feature_flags():
     """
     response = {
         "ENABLE_WEB_CHAT": str_to_bool.get(ENV["ENABLE_WEB_CHAT"]),
+        "ENABLE_LOCAL_FILES":str_to_bool.get(ENV["ENABLE_LOCAL_FILES"]),
+        "ENABLE_FILE_TAGS": str_to_bool.get(ENV["ENABLE_FILE_TAGS"]),
+        "ENABLE_FILE_FOLDERS": str_to_bool.get(ENV["ENABLE_FILE_FOLDERS"]),
         "ENABLE_UNGROUNDED_CHAT": str_to_bool.get(ENV["ENABLE_UNGROUNDED_CHAT"]),
         "ENABLE_MATH_ASSISTANT": str_to_bool.get(ENV["ENABLE_MATH_ASSISTANT"]),
         "ENABLE_TABULAR_DATA_ASSISTANT": str_to_bool.get(ENV["ENABLE_TABULAR_DATA_ASSISTANT"]),

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 import { useState } from 'react';
+import { useEffect } from 'react';
 import {
     Pivot,
     PivotItem
@@ -15,6 +16,7 @@ import { SparkleFilled, DocumentPdfFilled, DocumentDataFilled, GlobePersonFilled
 import styles from "./Content.module.css";
 import { OneDriveFilePicker } from '../../components/filepicker/onedrive-file-picker';
 import Switch from 'react-switch';
+import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
 
 export interface IButtonExampleProps {
     disabled?: boolean;
@@ -25,7 +27,23 @@ const Content = () => {
     const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
     const [selectedTags, setSelectedTags] = useState<string[] | undefined>(undefined);
     const [selectedApproach, setSelectedApproach] = useState<number | undefined>(undefined);
-    const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(true);
+    const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
+
+        const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
+    
+        async function fetchFeatureFlags() {
+            try {
+                const fetchedFeatureFlags = await getFeatureFlags();
+                setFeatureFlags(fetchedFeatureFlags);
+            } catch (error) {
+                // Handle the error here
+                console.log(error);
+            }
+        }
+    
+        useEffect(() => {
+            
+        }, []);
 
     const onSelectedKeyChanged = (selectedFolder: string[]) => {
         setSelectedKey(selectedFolder[0]);
@@ -94,16 +112,20 @@ const Content = () => {
                             </span>
                         </div>
                         <div className={styles.EmptyObjectivesListItem}>
+                        {(featureFlags?.ENABLE_FILE_FOLDERS ?? false) && (
                             <FolderPicker allowFolderCreation={true} onSelectedKeyChange={onSelectedKeyChanged} />
+                        )}
+                        {(featureFlags?.ENABLE_FILE_FOLDERS ?? false) && (
                             <TagPickerInline allowNewTags={true} onSelectedTagsChange={onSelectedTagsChanged} />
-
+                        )}
                         </div>
                         <div className={styles.FileSelectionItem}>
+                        {(featureFlags?.ENABLE_LOCAL_FILES ?? false) && (
                             <div className={styles.FileSelector}>
                                 <span>Would you like to upload local files? </span>
                                 <Switch height={20} onChange={handleToggle} checked={isLocalFileSelection} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#CCCCC" />
                             </div>
-
+                        )}
                             {isLocalFileSelection && <FilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                             {!isLocalFileSelection && <OneDriveFilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                         </div>
