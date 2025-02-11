@@ -73,14 +73,9 @@ variable "operationPolicies" {
   default = []
 }
 
-
 variable "is_secure_mode" {
   type    = bool
   default = false
-}
-
-variable "private_dns_zone_ids" {
-  type = set(string)
 }
 
 variable "vnet_name" {
@@ -89,4 +84,9 @@ variable "vnet_name" {
 
 variable "subnet_name" {
   type = string
+}
+
+variable "networkSecurityGroupName" {
+  type = string
+  default = ""
 }

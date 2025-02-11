@@ -209,16 +209,16 @@ module "privateDnsZoneACR" {
   depends_on = [ module.network ]
 }
 
-module "privateDnsZoneApim" {
-  source             = "./core/network/privateDNS"
-  count              = var.is_secure_mode ? 1 : 0
-  name               = "privatelink.${var.azure_apim_domain}"
-  resourceGroupName  = azurerm_resource_group.network_rg.name
-  vnetLinkName       = "apim-infoasst-vnetlink-${local.random_string}"
-  virtual_network_id = var.is_secure_mode ? module.network[0].vnet_id : null
-  tags               = local.tags
-  depends_on = [ module.network ]
-}
+# module "privateDnsZoneApim" {
+#   source             = "./core/network/privateDNS"
+#   count              = var.is_secure_mode ? 1 : 0
+#   name               = "privatelink.${var.azure_apim_domain}"
+#   resourceGroupName  = azurerm_resource_group.network_rg.name
+#   vnetLinkName       = "apim-infoasst-vnetlink-${local.random_string}"
+#   virtual_network_id = var.is_secure_mode ? module.network[0].vnet_id : null
+#   tags               = local.tags
+#   depends_on = [ module.network ]
+# }
 
 module "logging" {
   source = "./core/logging/loganalytics"
@@ -968,6 +968,7 @@ module "apim" {
   name              = var.apimName != "" ? var.apimName : "apim-infoasst-${local.random_string}"
   resourceGroupName = azurerm_resource_group.app_rg.name
   networkResourceGroupName      = azurerm_resource_group.network_rg.name
+  networkSecurityGroupName = var.is_secure_mode ? module.network[0].nsg_name : null
   tags              = local.tags
   sku               = var.apimSku != "" ? var.apimSku : "Developer"
   sku_count         = 1
@@ -980,7 +981,6 @@ module "apim" {
   backendName       = "hhs-api"
   backendUrl        = module.webapp.uri
   is_secure_mode = var.is_secure_mode
-  private_dns_zone_ids = var.is_secure_mode ?[ module.privateDnsZoneApim[0].privateDnsZoneResourceId ] : null
   vnet_name = var.is_secure_mode ? module.network[0].vnet_name : null
   subnet_name = var.is_secure_mode ? module.network[0].snetApim_name : null
   operationPolicies = [
