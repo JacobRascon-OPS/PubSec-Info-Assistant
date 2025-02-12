@@ -29,21 +29,21 @@ const Content = () => {
     const [selectedApproach, setSelectedApproach] = useState<number | undefined>(undefined);
     const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
 
-        const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
-    
-        async function fetchFeatureFlags() {
-            try {
-                const fetchedFeatureFlags = await getFeatureFlags();
-                setFeatureFlags(fetchedFeatureFlags);
-            } catch (error) {
-                // Handle the error here
-                console.log(error);
-            }
+    const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
+
+    async function fetchFeatureFlags() {
+        try {
+            const fetchedFeatureFlags = await getFeatureFlags();
+            setFeatureFlags(fetchedFeatureFlags);
+        } catch (error) {
+            // Handle the error here
+            console.log(error);
         }
-    
-        useEffect(() => {
-            
-        }, []);
+    }
+
+    useEffect(() => {
+        fetchFeatureFlags();
+    }, []);
 
     const onSelectedKeyChanged = (selectedFolder: string[]) => {
         setSelectedKey(selectedFolder[0]);
