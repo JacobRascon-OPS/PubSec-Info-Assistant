@@ -435,7 +435,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
           }}
         >
           <Cloud48Regular />
-          <span className={styles.banner_text}>Click to Add files</span>
+          <span className={styles.banner_text}>Click to add files from OneDrive</span>
         </div>
       </div>
       {/* files listing */}

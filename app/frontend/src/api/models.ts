@@ -217,6 +217,9 @@ export type GetTagsResponse = {
 
 export type GetFeatureFlagsResponse = {
     ENABLE_WEB_CHAT: boolean;
+    ENABLE_LOCAL_FILES: boolean;
+    ENABLE_FILE_TAGS: boolean;
+    ENABLE_FILE_FOLDERS: boolean;
     ENABLE_UNGROUNDED_CHAT: boolean;
     ENABLE_MATH_ASSISTANT: boolean;
     ENABLE_TABULAR_DATA_ASSISTANT: boolean;
