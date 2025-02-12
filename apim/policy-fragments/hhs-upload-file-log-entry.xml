@@ -37,7 +37,6 @@
                 var responseDetails = new {
                     PartitionKey=context.Variables.GetValueOrDefault<string>("partitionKey"),
                     RowKey = context.Variables.GetValueOrDefault<string>("rowKey"),
-                    UserName = context.Variables.GetValueOrDefault<string>("userName"),
                     UserEmail = context.Variables.GetValueOrDefault<string>("userEmail"),
                     FilePath = context.Variables.GetValueOrDefault<string>("filePath"),
                     UploadSource = context.Variables.GetValueOrDefault<string>("uploadSource")

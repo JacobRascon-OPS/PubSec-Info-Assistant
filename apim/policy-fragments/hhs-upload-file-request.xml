@@ -8,16 +8,8 @@
         string[] lines = filePathBlock.Split(new string[] { "\r\n", "\n" }, System.StringSplitOptions.RemoveEmptyEntries);  
         return lines.Length > 0 ? lines[0] : string.Empty;
     }" />
-	<!-- setting userName -->
-	<set-variable name="userName" value="@{
-        var jwt = context.Request.Headers.GetValueOrDefault("Authorization").AsJwt();
-        return jwt?.Claims.GetValueOrDefault("name") ?? "unknown";
-    }" />
 	<!-- setting userEmail -->
-	<set-variable name="userEmail" value="@{
-        var jwt = context.Request.Headers.GetValueOrDefault("Authorization").AsJwt();
-        return jwt?.Claims.GetValueOrDefault("email") ?? "unknown";
-    }" />
+	<set-variable name="userEmail" value="@(context.Request.Headers.GetValueOrDefault("x-user-principal-name"))" />
 	<!-- setting the upload Source -->
 	<set-variable name="uploadSource" value="@{
         string body = context.Request.Body.As<string>(preserveContent: true);  
