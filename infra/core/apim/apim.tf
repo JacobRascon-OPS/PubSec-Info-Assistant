@@ -42,6 +42,17 @@ resource "azurerm_api_management" "apim" {
   depends_on = [ azurerm_network_security_rule.rule ]
 }
 
+resource "azurerm_api_management_logger" "apim_logger" {
+  name                = "${var.name}-logger"
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = var.resourceGroupName
+  resource_id         = var.appInsightsResourceId
+
+  application_insights {
+    connection_string = var.appInsightsConnectionString
+  }
+}
+
 data "azurerm_virtual_network" "vnet" {
   count                = var.is_secure_mode ? 1 : 0
   name                = var.vnet_name

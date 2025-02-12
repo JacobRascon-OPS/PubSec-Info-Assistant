@@ -90,3 +90,15 @@ variable "networkSecurityGroupName" {
   type = string
   default = ""
 }
+
+variable "appInsightsConnectionString" {
+  type = string
+}
+
+variable "appInsightsInstrumentationKey" {
+  type = string
+}
+
+variable "appInsightsResourceId" {
+  type = string
+}
