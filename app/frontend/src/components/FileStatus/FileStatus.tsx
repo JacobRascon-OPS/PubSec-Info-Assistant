@@ -148,6 +148,7 @@ export const FileStatus = ({ className }: Props) => {
     useEffect(() => {
         fetchFolders();
         fetchTags();        
+        onGetStatusClick()       
     }, []);
 
     function convertStatusToItems(fileList: FileUploadBasicStatus[]) {
