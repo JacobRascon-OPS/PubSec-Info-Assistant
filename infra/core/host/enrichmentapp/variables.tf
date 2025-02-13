@@ -151,3 +151,7 @@ variable "private_dns_zone_ids" {
 variable "azure_environment" {
   type        = string
 }
+
+variable "appserviceMinTlsVersion" {
+  type=string
+}

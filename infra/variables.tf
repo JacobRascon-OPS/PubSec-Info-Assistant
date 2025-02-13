@@ -713,6 +713,15 @@ variable "prefix"{
 
 variable "azure_apim_domain" {
   type = string
-  default = "azure-api.net"
-  
+  default = "azure-api.net" 
+}
+
+variable "appserviceMinTlsVersion" {
+  type=string
+  default="1.2"
+}
+
+variable "hubVnetId" {
+  type=string
+  default="/subscriptions/7927037f-a4d7-49fe-b21b-09ad394bb786/resourceGroups/rg-jumpbox-us-01/providers/Microsoft.Network/virtualNetworks/jumpbox-eus-01-vnet"
 }

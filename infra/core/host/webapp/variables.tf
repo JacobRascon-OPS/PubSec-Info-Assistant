@@ -184,3 +184,7 @@ variable "container_registry_admin_password" {
 variable "azure_environment" {
   type        = string
 }
+
+variable "appserviceMinTlsVersion" {
+  type=string
+}

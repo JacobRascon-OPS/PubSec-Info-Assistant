@@ -2,12 +2,11 @@ variable "name" {
   type = string
 }
 
-variable "vnetLinkName" {
-  type = string
-}
-
-variable "virtual_network_id" {
-  type = string
+variable "vnetLinks" {
+  type = list(object({
+    name = string
+    vnetId = string
+  }))
 }
 
 variable "resourceGroupName" {

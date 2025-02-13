@@ -8,7 +8,7 @@ locals {
 }
 
 resource "azurerm_network_security_rule" "rule" {
-  count = var.is_secure_mode ? 1: 0
+  count                       = var.is_secure_mode ? 1 : 0
   name                        = "APIMmanagementEndpoint"
   priority                    = 110
   direction                   = "Inbound"
@@ -29,17 +29,22 @@ resource "azurerm_api_management" "apim" {
   publisher_email     = var.publisher_email
   publisher_name      = var.publisher_name
   sku_name            = "${var.sku}_${var.sku_count}"
-  
+
   virtual_network_type = var.is_secure_mode ? "Internal" : "None"
-  virtual_network_configuration {
-    subnet_id = var.is_secure_mode ? data.azurerm_subnet.subnet[0].id : null
+
+  dynamic "virtual_network_configuration" {
+
+    for_each = length(azurerm_network_security_rule.rule) > 0 ? [1] : []
+
+    content {
+      subnet_id = data.azurerm_subnet.subnet[0].id
+    }
   }
 
   identity {
     type = "SystemAssigned"
   }
 
-  depends_on = [ azurerm_network_security_rule.rule ]
 }
 
 resource "azurerm_api_management_logger" "apim_logger" {
@@ -54,7 +59,7 @@ resource "azurerm_api_management_logger" "apim_logger" {
 }
 
 data "azurerm_virtual_network" "vnet" {
-  count                = var.is_secure_mode ? 1 : 0
+  count               = var.is_secure_mode ? 1 : 0
   name                = var.vnet_name
   resource_group_name = var.networkResourceGroupName
 }
@@ -134,7 +139,7 @@ resource "azurerm_api_management_api_policy" "base_policy" {
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resourceGroupName
   xml_content         = var.basePolicyContent
-  depends_on          = [azurerm_api_management_api.api]
+  depends_on          = [azurerm_api_management.apim, azurerm_api_management_api.api]
 }
 
 resource "azurerm_api_management_api_operation_policy" "operation_policy" {
@@ -144,8 +149,19 @@ resource "azurerm_api_management_api_operation_policy" "operation_policy" {
   resource_group_name = var.resourceGroupName
   operation_id        = var.operationPolicies[count.index].operationId
   xml_content         = var.operationPolicies[count.index].policyContent
-  depends_on          = [azurerm_api_management_api.api, azurerm_api_management_policy_fragment.api_policy_fragments]
+  depends_on          = [azurerm_api_management.apim, azurerm_api_management_api.api, azurerm_api_management_policy_fragment.api_policy_fragments]
+
+ lifecycle {
+    replace_triggered_by = [null_resource.secure_mode]
+  }
 }
+
+resource "null_resource" "secure_mode" {
+  triggers = {
+    is_secure_mode = var.is_secure_mode
+  }
+}
+
 
 resource "azurerm_api_management_named_value" "name_values" {
   count               = length(var.nameValues)
@@ -162,6 +178,7 @@ resource "null_resource" "get_subscription_key" {
   provisioner "local-exec" {
 
     command = <<EOT
+    timestamp = "${timestamp()}"
     subscriptonId=$(az rest --uri "${azurerm_api_management.apim.id}/subscriptions?api-version=2022-08-01" --query "value[? contains(properties.scope,'${azurerm_api_management_product.unlimited.product_id}')] | [0].name" -o tsv)
     az rest --method post --uri "${azurerm_api_management.apim.id}/subscriptions/$subscriptonId/listSecrets?api-version=2022-08-01" --query primaryKey -o tsv > ${local.subscription_key_file_name}
   EOT
@@ -189,7 +206,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
 
 resource "azurerm_private_dns_a_record" "gateway" {
   count               = var.is_secure_mode ? 1 : 0
-  name                = "${var.name}"
+  name                = var.name
   zone_name           = azurerm_private_dns_zone.dns[0].name
   resource_group_name = var.networkResourceGroupName
   ttl                 = 300

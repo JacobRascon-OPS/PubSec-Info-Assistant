@@ -329,3 +329,7 @@ variable "azure_environment" {
 variable "azure_ai_credential_domain" {
   type        = string
 }
+
+variable "appserviceMinTlsVersion" {
+  type=string
+}
