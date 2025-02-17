@@ -232,3 +232,11 @@ output "AZURE_OPENAI_AUTHORITY_HOST" {
 output "AZURE_SEARCH_AUDIENCE" {
   value = var.azure_search_scope
 }
+
+output "AZURE_AD_CLIENT_ID" {
+  value = module.entraObjects.azure_ad_mgmt_app_client_id
+}
+
+output "AZURE_AD_TENANT_ID" {
+  value = data.azurerm_client_config.current.tenant_id
+}

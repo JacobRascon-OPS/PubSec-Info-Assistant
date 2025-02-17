@@ -95,8 +95,8 @@ ENV = {
     "MAX_CSV_FILE_SIZE": "7",
     "LOCAL_DEBUG": "false",
     "AZURE_AI_CREDENTIAL_DOMAIN": "cognitiveservices.azure.com",
-    "ONEDRIVE_AZURE_AD_CLIENTID":"",
-    "ONEDRIVE_AZURE_AD_TENANTID":"",
+    "AZURE_AD_CLIENT_ID":"",
+    "AZURE_AD_TENANT_ID":"",
     "ONEDRIVE_BASE_URL":""
     }
 NEW_ENV = {
@@ -951,8 +951,8 @@ async def get_file(request: Request):
 @app.get("/get-onedrive-auth-config")
 async def get_onedrive_auth_config():
     return {
-        "TENANT_ID": ENV["ONEDRIVE_AZURE_AD_TENANTID"],
-        "CLIENT_ID": ENV["ONEDRIVE_AZURE_AD_CLIENTID"],
+        "TENANT_ID": ENV["AZURE_AD_TENANT_ID"],
+        "CLIENT_ID": ENV["AZURE_AD_CLIENT_ID"],
         "BASE_URL": ENV["ONEDRIVE_BASE_URL"]
     }
 

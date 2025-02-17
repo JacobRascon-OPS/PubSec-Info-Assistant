@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 import {
-    ChatResponse,
     ChatRequest,
     AllFilesUploadStatus,
     GetUploadStatusRequest,
@@ -23,27 +22,11 @@ import {
 } from "./models";
 import { isExpired, decodeToken } from "react-jwt";
 
-async function getAccessToken(): Promise<string | undefined | null> {
+async function getAccessTokenAsync(): Promise<string | undefined | null> {
     try {
         let accessToken = sessionStorage.getItem('hhs-gpt-access-token');
         if (!accessToken || isExpired(accessToken)) {
-            const tokenResp = await fetch('/.auth/me')
-            if (tokenResp.status === 200) {
-                const tokenRespJson = await tokenResp.json();
-                const newAccessToken = tokenRespJson[0].id_token;
-
-                if (isExpired(newAccessToken)) {
-                    const refreshResp = await fetch('/.auth/refresh')
-                    if (refreshResp.status === 200) {
-                        return await getAccessToken();
-                    }
-                }
-
-                if (newAccessToken) {
-                    sessionStorage.setItem('hhs-gpt-access-token', newAccessToken)
-                }
-                return newAccessToken;
-            }
+           throw Error("Access token expired. Refresh your browser and try again.");
         }
         return accessToken;
     }
@@ -53,7 +36,8 @@ async function getAccessToken(): Promise<string | undefined | null> {
 }
 
 interface DecodedToken {
-    email: string;
+    email: string | null;
+    upn: string | null
 }
 
 export async function fetchApi(
@@ -61,18 +45,18 @@ export async function fetchApi(
     init?: RequestInit,
 ): Promise<Response> {
 
-    let headers: HeadersInit = { ...init?.headers}
+    let headers: HeadersInit = { ...init?.headers }
     if (import.meta.env.VITE_ENVIRONMENT !== 'local') {
 
         headers = { ...headers, "Ocp-Apim-Subscription-Key": import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY }
 
-        const accessToken = await getAccessToken();
+        const accessToken = await getAccessTokenAsync();
 
         if (accessToken) {
-            let email = '';
+            let email: string | null = '';
             try {
                 const decodedToken = await decodeToken(accessToken) as DecodedToken;
-                email = decodedToken.email;
+                email = decodedToken.email || decodedToken.upn;
             }
             catch (error) {
                 console.error('Failed to decode token', error);
@@ -582,7 +566,7 @@ export async function getOneDriveAuthConfig(): Promise<OneDriveAuthConfigRespons
 
     const response = await fetchApi('/get-onedrive-auth-config', {
         method: 'GET'
-    }); 
+    });
 
     const authConfigResponse: OneDriveAuthConfigResponse = await response.json();
 

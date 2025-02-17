@@ -9,7 +9,7 @@ import styles from "./file-picker.module.css";
 import { FilesList } from "./files-list";
 import { fetchApi, getOneDriveAuthConfig, logStatus, StatusLogClassification, StatusLogEntry, StatusLogState } from "../../api";
 import { getToken } from './auth'
-import { Configuration, IPublicClientApplication, PublicClientApplication } from "@azure/msal-browser";
+import { useMsal } from "@azure/msal-react";
 
 interface Props {
   folderPath: string;
@@ -20,7 +20,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   const [files, setFiles] = useState<any>([]);
   const [progress, setProgress] = useState(0);
   const [uploadStarted, setUploadStarted] = useState(false);
-  const [msalInstance, setMsalInstace] = useState<IPublicClientApplication | null>(null)
+  const {instance} = useMsal();
   const [baseUrl, setBaseUrl] = useState<string | null>(null);
 
   const channelId = nanoid(); // Always use a unique id for the channel when hosting the picker.
@@ -33,20 +33,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
       console.error(authConfig.error)
       return;
     }
-
-    // MSAL configuration
-    const configuration: Configuration = {
-      auth: {
-        clientId: authConfig.CLIENT_ID,
-        authority: `https://login.microsoftonline.com/${authConfig.TENANT_ID}`,
-        redirectUri: window.location.origin
-      }
-    };
-
-    const pca = new PublicClientApplication(configuration);
-    await pca.initialize();
-
-    setMsalInstace(pca);
+  
     setBaseUrl(authConfig.BASE_URL);
   }
 
@@ -113,8 +100,8 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   }
 
   async function getAccessToken() {
-    if (msalInstance && baseUrl) {
-      const token = await getToken({ resource: baseUrl || '', command: "authenticate", type: "SharePoint" }, msalInstance);
+    if (instance && baseUrl) {
+      const token = await getToken({ resource: baseUrl || '', command: "authenticate", type: "SharePoint" }, instance);
       return token;
     }
     return null;
@@ -181,10 +168,10 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
             // 'getToken' represents a method that can take a command and return a valid auth token for the requested resource
             try {
               console.log(command)
-              if (!msalInstance) {
+              if (!instance) {
                 throw new Error("OneDrive auth config not initialized.");
               }
-              const token = await getToken(command, msalInstance, "MyFiles.Read");
+              const token = await getToken(command, instance, "MyFiles.Read");
 
               if (!token) {
                 throw new Error("Unable to obtain a token.");
@@ -226,7 +213,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
 
             try {
               await pick(command);
-
+             
               // let the picker know that the pick command was handled (required)
               port.postMessage({
                 type: "result",
@@ -357,7 +344,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
           // Append file and other data to FormData  
           data.append("file", file);
           data.append("file_path", filePath);
-          data.append("uploadSource", `${indexedFile.file["@sharePoint.endpoint"]}/drives/${indexedFile.file.parentReference.driveId}/items/${indexedFile.file.id}`);
+          data.append("uploadSource", `${indexedFile.file.webDavUrl}`);
 
           if (tags.length > 0) {
             data.append("tags", tags.map(encodeURIComponent).join(","));

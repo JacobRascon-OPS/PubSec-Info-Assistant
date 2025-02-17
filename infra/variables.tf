@@ -723,5 +723,20 @@ variable "appserviceMinTlsVersion" {
 
 variable "hubVnetId" {
   type=string
-  default="/subscriptions/7927037f-a4d7-49fe-b21b-09ad394bb786/resourceGroups/rg-jumpbox-us-01/providers/Microsoft.Network/virtualNetworks/jumpbox-eus-01-vnet"
+  default=""
+}
+
+variable "enableLocalFiles" {
+  type=bool
+  default=false
+}
+
+variable "enableFileFolders" {
+  type=bool
+  default=false
+}
+
+variable "enableFileTags" {
+  type=bool
+  default=false
 }

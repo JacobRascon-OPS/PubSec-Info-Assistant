@@ -493,9 +493,12 @@ module "webapp" {
     ENABLE_TABULAR_DATA_ASSISTANT         = var.enableTabularDataAssistant
     MAX_CSV_FILE_SIZE                     = var.maxCsvFileSize
     AZURE_AI_CREDENTIAL_DOMAIN            = var.azure_ai_private_link_domain
-    ONEDRIVE_AZURE_AD_TENANTID            = data.azurerm_client_config.current.tenant_id
-    ONEDRIVE_AZURE_AD_CLIENTID            = module.entraObjects.azure_ad_web_app_client_id
+    AZURE_AD_TENANT_ID                    = data.azurerm_client_config.current.tenant_id
+    AZURE_AD_CLIENT_ID                    = module.entraObjects.azure_ad_web_app_client_id
     ONEDRIVE_BASE_URL                     = var.oneDriveBaseUrl
+    ENABLE_LOCAL_FILES                    = var.enableLocalFiles
+    ENABLE_FILE_TAGS                      = var.enableFileTags
+    ENABLE_FILE_FOLDERS                   = var.enableFileFolders
   }
 
   aadClientId = module.entraObjects.azure_ad_web_app_client_id
@@ -1087,11 +1090,11 @@ module "apimRoles" {
 
 
 module "vnetPeerings" {
-  source = "./core/network/networkPeering"
-  count = var.is_secure_mode && var.hubVnetId != "" ? 1 : 0
-  networkResourceGroupName =  var.is_secure_mode ? azurerm_resource_group.network_rg[0].name : null
-  remoteVnetId = var.hubVnetId
-  vnet_name = var.is_secure_mode ? module.network[0].vnet_name : null
+  source                   = "./core/network/networkPeering"
+  count                    = var.is_secure_mode && var.hubVnetId != "" ? 1 : 0
+  networkResourceGroupName = var.is_secure_mode ? azurerm_resource_group.network_rg[0].name : null
+  remoteVnetId             = var.hubVnetId
+  vnet_name                = var.is_secure_mode ? module.network[0].vnet_name : null
 
   depends_on = [module.network]
 }

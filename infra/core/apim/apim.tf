@@ -151,7 +151,7 @@ resource "azurerm_api_management_api_operation_policy" "operation_policy" {
   xml_content         = var.operationPolicies[count.index].policyContent
   depends_on          = [azurerm_api_management.apim, azurerm_api_management_api.api, azurerm_api_management_policy_fragment.api_policy_fragments]
 
- lifecycle {
+  lifecycle {
     replace_triggered_by = [null_resource.secure_mode]
   }
 }
@@ -175,10 +175,14 @@ resource "azurerm_api_management_named_value" "name_values" {
 
 resource "null_resource" "get_subscription_key" {
   depends_on = [azurerm_api_management_product.unlimited]
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
   provisioner "local-exec" {
 
     command = <<EOT
-    timestamp = "${timestamp()}"
     subscriptonId=$(az rest --uri "${azurerm_api_management.apim.id}/subscriptions?api-version=2022-08-01" --query "value[? contains(properties.scope,'${azurerm_api_management_product.unlimited.product_id}')] | [0].name" -o tsv)
     az rest --method post --uri "${azurerm_api_management.apim.id}/subscriptions/$subscriptonId/listSecrets?api-version=2022-08-01" --query primaryKey -o tsv > ${local.subscription_key_file_name}
   EOT
