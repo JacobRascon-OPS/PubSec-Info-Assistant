@@ -24,6 +24,11 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
 variable "is_secure_mode" {
   description = "Specifies whether to deploy in secure mode"
   type        = bool

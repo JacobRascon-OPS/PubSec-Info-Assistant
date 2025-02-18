@@ -1,6 +1,6 @@
 resource "azurerm_application_insights_workbook" "example" {
   name                = "85b3e8bb-fc93-40be-83f2-98f6bec18ba0"
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.serviceResourceGroupName
   location            = var.location
   display_name        = var.logWorkbookName
   data_json = jsonencode({

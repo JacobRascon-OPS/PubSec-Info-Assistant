@@ -59,6 +59,9 @@
         "subnet_Dns_CIDR": {
             "type": "string"
         },
+        "subnet_Apim_CIDR": {
+            "type": "string"
+        },
         "privateEndpointNetworkPoliciesStatus": {
             "type": "string"
         },
@@ -269,6 +272,19 @@
                                     "type": "Microsoft.Network/virtualNetworks/subnets/delegations"
                                 }
                             ],
+                            "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPoliciesStatus')]",
+                            "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPoliciesStatus')]"
+                        },
+                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                    },
+                    {
+                        "name": "apim",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet_Apim_CIDR')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg_name'))]"
+                            },
+                            "delegations": [],
                             "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPoliciesStatus')]",
                             "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPoliciesStatus')]"
                         },

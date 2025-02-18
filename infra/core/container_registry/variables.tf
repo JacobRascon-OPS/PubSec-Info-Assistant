@@ -13,6 +13,11 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
 variable "vnet_name" {
   type = string  
 }

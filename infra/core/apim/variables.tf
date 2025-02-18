@@ -30,6 +30,11 @@ variable "resourceGroupName" {
   type=string
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
 variable "policyFragments" {
   type = list
   
@@ -66,4 +71,34 @@ variable "nameValues" {
 variable "operationPolicies" {
   type = list
   default = []
+}
+
+variable "is_secure_mode" {
+  type    = bool
+  default = false
+}
+
+variable "vnet_name" {
+  type = string
+}
+
+variable "subnet_name" {
+  type = string
+}
+
+variable "networkSecurityGroupName" {
+  type = string
+  default = ""
+}
+
+variable "appInsightsConnectionString" {
+  type = string
+}
+
+variable "appInsightsInstrumentationKey" {
+  type = string
+}
+
+variable "appInsightsResourceId" {
+  type = string
 }

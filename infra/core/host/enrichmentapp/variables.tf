@@ -34,6 +34,16 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
+  type = string
+  default = ""
+}
+
 variable "storageAccountId" {
   type    = string
   default = ""
@@ -140,4 +150,8 @@ variable "private_dns_zone_ids" {
 
 variable "azure_environment" {
   type        = string
+}
+
+variable "appserviceMinTlsVersion" {
+  type=string
 }

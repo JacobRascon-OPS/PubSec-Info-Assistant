@@ -34,6 +34,16 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
+  type = string
+  default = ""
+}
+
 variable "storageAccountId" {
   type    = string
   default = ""
@@ -173,4 +183,8 @@ variable "container_registry_admin_password" {
 
 variable "azure_environment" {
   type        = string
+}
+
+variable "appserviceMinTlsVersion" {
+  type=string
 }

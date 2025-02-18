@@ -8,7 +8,17 @@ variable "location" {
   type        = string
 }
 
-variable "resourceGroupName" {
+variable "applicationResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
   type    = string
   default = ""
 }
@@ -106,7 +116,7 @@ variable "azure_acr_domain" {
 
 variable "use_semantic_reranker" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "azure_storage_domain" {
@@ -347,7 +357,7 @@ variable "azure_openAI_CIDR" {
 
 variable "integration_CIDR" {
   type    = string
-  default = "10.0.8.192/26"
+  default = "10.0.8.192/28"
 }
 
 variable "acr_CIDR" {
@@ -358,6 +368,11 @@ variable "acr_CIDR" {
 variable "dns_CIDR" {
   type    = string
   default = "10.0.8.176/28"
+}
+
+variable "apim_CIDR" {
+  type    = string
+  default = "10.0.8.208/28"
 }
 
 variable "ddos_plan_id" {
@@ -395,13 +410,13 @@ variable "appServicePlanName" {
 variable "appServiceSkuSize" {
   description = "The size of the app service plan for the IA website. Must match with the tier value in appServiceSkuTier."
   type        = string
-  default     = "B1"
+  default     = "S1"
 }
 
 variable "appServiceSkuTier" {
   description = "The tier of the app service plan for the IA website. Must match with the size value in appServiceSkuSize."
   type        = string
-  default     = "Basic"
+  default     = "Standard"
 
 }
 
@@ -413,13 +428,13 @@ variable "enrichmentAppServicePlanName" {
 variable "enrichmentAppServiceSkuSize" {
   description = "The size of the app service plan for the enrichment service. Must match with the tier value in enrichmentAppServiceSkuTier."
   type        = string
-  default     = "B3"
+  default     = "P2v3"
 }
 
 variable "enrichmentAppServiceSkuTier" {
   description = "The tier of the app service plan for the enrichment service. Must match with the size value in enrichmentAppServiceSkuSize."
   type        = string
-  default     = "Basic"
+  default     = "PremiumV3"
 }
 
 variable "logAnalyticsName" {
@@ -450,13 +465,13 @@ variable "functionsAppName" {
 variable "functionsAppSkuSize" {
   description = "The size of the app service plan for the functions app. Must match with the tier value in functionsAppSkuTier."
   type        = string
-  default     = "B2"
+  default     = "S2"
 }
 
 variable "functionsAppSkuTier" {
   description = "The tier of the app service plan for the functions app. Must match with the size value in functionsAppSkuSize."
   type        = string
-  default     = "Basic"
+  default     = "Standard"
 }
 
 variable "searchServicesName" {
@@ -684,4 +699,44 @@ variable "container_prefixes" {
 variable "oneDriveBaseUrl" {
   type=string
   default=""
+}
+
+variable "index" {
+  type=number
+  default=98
+}
+
+variable "prefix"{
+  type=string
+  default="lab"
+}
+
+variable "azure_apim_domain" {
+  type = string
+  default = "azure-api.net" 
+}
+
+variable "appserviceMinTlsVersion" {
+  type=string
+  default="1.2"
+}
+
+variable "hubVnetId" {
+  type=string
+  default=""
+}
+
+variable "enableLocalFiles" {
+  type=bool
+  default=false
+}
+
+variable "enableFileFolders" {
+  type=bool
+  default=false
+}
+
+variable "enableFileTags" {
+  type=bool
+  default=false
 }

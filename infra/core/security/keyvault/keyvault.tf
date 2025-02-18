@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 data "azurerm_private_dns_zone" "kv_dns_zone" {
   count                = var.is_secure_mode ? 1 : 0
   name                = "privatelink.${var.azure_keyvault_domain}"
-  resource_group_name = var.resourceGroupName
+  resource_group_name = var.networkResourceGroupName
 }
 
 resource "azurerm_key_vault" "kv" {
@@ -48,16 +48,16 @@ data "azurerm_subnet" "subnet" {
   count                = var.is_secure_mode ? 1 : 0
   name                 = var.subnet_name
   virtual_network_name = var.vnet_name
-  resource_group_name  = var.resourceGroupName
+  resource_group_name  = var.networkResourceGroupName
 }
 
 resource "azurerm_private_endpoint" "kv_private_endpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoasstkvnic"
+  custom_network_interface_name = "${var.name}-nic"
 
   private_service_connection {
     name                           = "${var.name}-kv-connection"

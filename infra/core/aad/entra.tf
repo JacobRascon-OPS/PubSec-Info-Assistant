@@ -8,14 +8,14 @@ locals {
 
 resource "azuread_application" "aad_web_app" {
   count                         = var.isInAutomation ? 0 : 1
-  display_name                  = "infoasst_web_access_${var.randomString}"
-  identifier_uris               = ["api://infoasst-${var.randomString}"]
+  display_name                  = "web_access_infoasst_${var.randomString}"
+  identifier_uris               = ["api://app-infoasst-${var.randomString}"]
   owners                        = local.owner_ids
   sign_in_audience              = "AzureADMyOrg"
   oauth2_post_response_required = true
   service_management_reference = var.serviceManagementReference
   web {
-    redirect_uris = ["https://infoasst-web-${var.randomString}.${var.azure_websites_domain}/.auth/login/aad/callback"]
+    redirect_uris = ["https://app-infoasst-${var.randomString}.${var.azure_websites_domain}/.auth/login/aad/callback"]
     implicit_grant {
       access_token_issuance_enabled = true
       id_token_issuance_enabled     = true
@@ -26,7 +26,7 @@ resource "azuread_application" "aad_web_app" {
 resource "azuread_application_password" "aad_web_app_password" {
   count           = var.isInAutomation ? 0 : 1
   application_id  = azuread_application.aad_web_app[0].id
-  display_name    = "infoasst-web"
+  display_name    = "app-infoasst"
   end_date_relative = "${var.password_lifetime * 24}h"
 }
 
@@ -39,7 +39,7 @@ resource "azuread_service_principal" "aad_web_sp" {
 
 resource "azuread_application" "aad_mgmt_app" {
   count             = var.isInAutomation ? 0 : 1
-  display_name      = "infoasst_mgmt_access_${var.randomString}"
+  display_name      = "mgmt_access_infoasst_${var.randomString}"
   owners            = local.owner_ids
   sign_in_audience  = "AzureADMyOrg"
   service_management_reference = var.serviceManagementReference

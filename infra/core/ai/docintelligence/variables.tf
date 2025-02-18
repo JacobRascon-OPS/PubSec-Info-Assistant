@@ -21,11 +21,16 @@ variable "sku" {
     name = string
   })
   default = {
-    name = "F0"
+    name = "S0"
   }
 }
 
 variable "resourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "networkResourceGroupName" {
   type    = string
   default = ""
 }

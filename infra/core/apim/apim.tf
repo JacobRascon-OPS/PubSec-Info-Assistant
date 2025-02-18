@@ -1,6 +1,27 @@
 locals {
-  subscription_key_file_name="subscriptionkey.txt"
+  subscription_key_file_name = "subscriptionkey.txt"
+  rootDnsName                = "azure-api.net"
+
+  management_dns_prefix = "management"
+  devportal_dns_prefix  = "developer"
+  scm_dns_prefix        = "git"
 }
+
+resource "azurerm_network_security_rule" "rule" {
+  count                       = var.is_secure_mode ? 1 : 0
+  name                        = "APIMmanagementEndpoint"
+  priority                    = 110
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "3443"
+  source_address_prefix       = "ApiManagement"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = var.networkResourceGroupName
+  network_security_group_name = var.networkSecurityGroupName
+}
+
 resource "azurerm_api_management" "apim" {
   name                = var.name
   location            = var.location
@@ -9,9 +30,45 @@ resource "azurerm_api_management" "apim" {
   publisher_name      = var.publisher_name
   sku_name            = "${var.sku}_${var.sku_count}"
 
+  virtual_network_type = var.is_secure_mode ? "Internal" : "None"
+
+  dynamic "virtual_network_configuration" {
+
+    for_each = length(azurerm_network_security_rule.rule) > 0 ? [1] : []
+
+    content {
+      subnet_id = data.azurerm_subnet.subnet[0].id
+    }
+  }
+
   identity {
     type = "SystemAssigned"
   }
+
+}
+
+resource "azurerm_api_management_logger" "apim_logger" {
+  name                = "${var.name}-logger"
+  api_management_name = azurerm_api_management.apim.name
+  resource_group_name = var.resourceGroupName
+  resource_id         = var.appInsightsResourceId
+
+  application_insights {
+    connection_string = var.appInsightsConnectionString
+  }
+}
+
+data "azurerm_virtual_network" "vnet" {
+  count               = var.is_secure_mode ? 1 : 0
+  name                = var.vnet_name
+  resource_group_name = var.networkResourceGroupName
+}
+
+data "azurerm_subnet" "subnet" {
+  count                = var.is_secure_mode ? 1 : 0
+  name                 = var.subnet_name
+  virtual_network_name = var.vnet_name
+  resource_group_name  = var.networkResourceGroupName
 }
 
 resource "azurerm_api_management_product" "unlimited" {
@@ -82,7 +139,7 @@ resource "azurerm_api_management_api_policy" "base_policy" {
   api_management_name = azurerm_api_management.apim.name
   resource_group_name = var.resourceGroupName
   xml_content         = var.basePolicyContent
-  depends_on          = [azurerm_api_management_api.api]
+  depends_on          = [azurerm_api_management.apim, azurerm_api_management_api.api]
 }
 
 resource "azurerm_api_management_api_operation_policy" "operation_policy" {
@@ -92,8 +149,19 @@ resource "azurerm_api_management_api_operation_policy" "operation_policy" {
   resource_group_name = var.resourceGroupName
   operation_id        = var.operationPolicies[count.index].operationId
   xml_content         = var.operationPolicies[count.index].policyContent
-  depends_on          = [azurerm_api_management_api.api, azurerm_api_management_policy_fragment.api_policy_fragments]
+  depends_on          = [azurerm_api_management.apim, azurerm_api_management_api.api, azurerm_api_management_policy_fragment.api_policy_fragments]
+
+  lifecycle {
+    replace_triggered_by = [null_resource.secure_mode]
+  }
 }
+
+resource "null_resource" "secure_mode" {
+  triggers = {
+    is_secure_mode = var.is_secure_mode
+  }
+}
+
 
 resource "azurerm_api_management_named_value" "name_values" {
   count               = length(var.nameValues)
@@ -107,9 +175,14 @@ resource "azurerm_api_management_named_value" "name_values" {
 
 resource "null_resource" "get_subscription_key" {
   depends_on = [azurerm_api_management_product.unlimited]
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
   provisioner "local-exec" {
-   
-    command  = <<EOT
+
+    command = <<EOT
     subscriptonId=$(az rest --uri "${azurerm_api_management.apim.id}/subscriptions?api-version=2022-08-01" --query "value[? contains(properties.scope,'${azurerm_api_management_product.unlimited.product_id}')] | [0].name" -o tsv)
     az rest --method post --uri "${azurerm_api_management.apim.id}/subscriptions/$subscriptonId/listSecrets?api-version=2022-08-01" --query primaryKey -o tsv > ${local.subscription_key_file_name}
   EOT
@@ -117,6 +190,56 @@ resource "null_resource" "get_subscription_key" {
 }
 
 data "local_file" "subscription_key" {
-  filename = local.subscription_key_file_name
+  filename   = local.subscription_key_file_name
   depends_on = [null_resource.get_subscription_key]
+}
+
+resource "azurerm_private_dns_zone" "dns" {
+  count               = var.is_secure_mode ? 1 : 0
+  name                = local.rootDnsName
+  resource_group_name = var.networkResourceGroupName
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
+  count                 = var.is_secure_mode ? 1 : 0
+  name                  = "pl-apim-infoasst-net"
+  resource_group_name   = var.networkResourceGroupName
+  private_dns_zone_name = azurerm_private_dns_zone.dns[0].name
+  virtual_network_id    = data.azurerm_virtual_network.vnet[0].id
+}
+
+resource "azurerm_private_dns_a_record" "gateway" {
+  count               = var.is_secure_mode ? 1 : 0
+  name                = var.name
+  zone_name           = azurerm_private_dns_zone.dns[0].name
+  resource_group_name = var.networkResourceGroupName
+  ttl                 = 300
+  records             = azurerm_api_management.apim.private_ip_addresses
+}
+
+resource "azurerm_private_dns_a_record" "management" {
+  count               = var.is_secure_mode ? 1 : 0
+  name                = "${var.name}.${local.management_dns_prefix}"
+  zone_name           = azurerm_private_dns_zone.dns[0].name
+  resource_group_name = var.networkResourceGroupName
+  ttl                 = 300
+  records             = azurerm_api_management.apim.private_ip_addresses
+}
+
+resource "azurerm_private_dns_a_record" "devportal" {
+  count               = var.is_secure_mode ? 1 : 0
+  name                = "${var.name}.${local.devportal_dns_prefix}"
+  zone_name           = azurerm_private_dns_zone.dns[0].name
+  resource_group_name = var.networkResourceGroupName
+  ttl                 = 300
+  records             = azurerm_api_management.apim.private_ip_addresses
+}
+
+resource "azurerm_private_dns_a_record" "scm" {
+  count               = var.is_secure_mode ? 1 : 0
+  name                = "${var.name}.${local.scm_dns_prefix}"
+  zone_name           = azurerm_private_dns_zone.dns[0].name
+  resource_group_name = var.networkResourceGroupName
+  ttl                 = 300
+  records             = azurerm_api_management.apim.private_ip_addresses
 }

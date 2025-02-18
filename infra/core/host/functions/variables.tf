@@ -34,6 +34,16 @@ variable "resourceGroupName" {
   default = ""
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
+variable "serviceResourceGroupName" {
+  type = string
+  default = ""
+}
+
 variable "storageAccountId" {
   type    = string
   default = ""
@@ -318,4 +328,8 @@ variable "azure_environment" {
 
 variable "azure_ai_credential_domain" {
   type        = string
+}
+
+variable "appserviceMinTlsVersion" {
+  type=string
 }

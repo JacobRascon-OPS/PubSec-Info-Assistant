@@ -34,6 +34,11 @@ variable "resourceGroupName" {
   type    = string
 }
 
+variable "networkResourceGroupName" {
+  type    = string
+  default = ""
+}
+
 variable "azure_search_domain" {
   type = string  
 }

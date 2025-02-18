@@ -1,6 +1,7 @@
 locals {
   container_arm_file_path = "arm_templates/storage_container/container.template.json"
   queue_arm_file_path     = "arm_templates/storage_queue/queue.template.json"
+  table_arm_file_path     = "arm_templates/storage_table/table.template.json"
 }
 
 resource "azurerm_storage_account" "storage" {
@@ -148,6 +149,13 @@ data "template_file" "queue" {
   }
 }
 
+data "template_file" "table" {
+  template = file(local.table_arm_file_path)
+  vars = {
+    arm_template_schema_mgmt_api = var.arm_template_schema_mgmt_api
+  }
+}
+
 resource "azurerm_resource_group_template_deployment" "container" {
   depends_on          = [azurerm_storage_account.storage]
   count               = length(var.containers)
@@ -183,9 +191,28 @@ resource "azurerm_resource_group_template_deployment" "queue" {
   deployment_mode = "Incremental"
 }
 
+// Create a storage table
+resource "azurerm_resource_group_template_deployment" "table" {
+  depends_on          = [azurerm_storage_account.storage]
+  count               = length(var.tableNames)
+  resource_group_name = var.resourceGroupName
+  parameters_content = jsonencode({
+    "storageAccountName" = { value = "${azurerm_storage_account.storage.name}" },
+    "location"           = { value = var.location },
+    "tableName"          = { value = var.tableNames[count.index] }
+    "publicNetworkAccess" = { value = var.is_secure_mode ? "Disabled" : "Enabled" }
+  })
+  template_content = data.template_file.table.template
+  # The filemd5 forces this to run when the file is changed
+  # this ensures the keys are up-to-date
+  name            = "${var.tableNames[count.index]}-${filemd5(local.table_arm_file_path)}"
+  deployment_mode = "Incremental"
+}
+
+
 module "storage_connection_string" {
   source                        = "../security/keyvaultSecret"
-  resourceGroupName             = var.resourceGroupName
+  resourceGroupName             = var.serviceResourceGroupName
   arm_template_schema_mgmt_api  = var.arm_template_schema_mgmt_api
   key_vault_name                = var.key_vault_name
   secret_name                   = "AZURE-STORAGE-CONNECTION-STRING"
@@ -200,7 +227,7 @@ data "azurerm_subnet" "subnet" {
   count                = var.is_secure_mode ? 1 : 0
   name                 = var.subnet_name
   virtual_network_name = var.vnet_name
-  resource_group_name  = var.resourceGroupName
+  resource_group_name  = var.networkResourceGroupName
 }
 
 // Create a private endpoint for blob storage account
@@ -208,9 +235,9 @@ resource "azurerm_private_endpoint" "blobPrivateEndpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint-blob"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoasstblobstoragenic"
+  custom_network_interface_name = "${var.name}-blobstoragenic"
 
   private_service_connection {
     name                           = "${var.name}-private-link-service-connection"
@@ -230,9 +257,9 @@ resource "azurerm_private_endpoint" "filePrivateEndpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint-file"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoasstfilestoragenic"
+  custom_network_interface_name = "${var.name}-filestoragenic"
 
   private_service_connection {
     name                           = "${var.name}-private-link-service-connection"
@@ -253,9 +280,9 @@ resource "azurerm_private_endpoint" "tablePrivateEndpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint-table"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoassttablestoragenic"
+  custom_network_interface_name = "${var.name}-tablestoragenic"
 
   private_service_connection {
     name                           = "${var.name}-private-link-service-connection"
@@ -275,9 +302,9 @@ resource "azurerm_private_endpoint" "queuePrivateEndpoint" {
   count                         = var.is_secure_mode ? 1 : 0
   name                          = "${var.name}-private-endpoint-queue"
   location                      = var.location
-  resource_group_name           = var.resourceGroupName
+  resource_group_name           = var.networkResourceGroupName
   subnet_id                     = data.azurerm_subnet.subnet[0].id
-  custom_network_interface_name = "infoasstqueuestoragenic"
+  custom_network_interface_name = "${var.name}-queuestoragenic"
 
   private_service_connection {
     name                           = "${var.name}-private-link-service-connection"
