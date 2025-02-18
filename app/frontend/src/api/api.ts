@@ -26,7 +26,7 @@ async function getAccessTokenAsync(): Promise<string | undefined | null> {
     try {
         let accessToken = sessionStorage.getItem('hhs-gpt-access-token');
         if (!accessToken || isExpired(accessToken)) {
-           throw Error("Access token expired. Refresh your browser and try again.");
+            throw Error("Access token expired. Refresh your browser and try again.");
         }
         return accessToken;
     }
@@ -53,19 +53,10 @@ export async function fetchApi(
         const accessToken = await getAccessTokenAsync();
 
         if (accessToken) {
-            let email: string | null = '';
-            try {
-                const decodedToken = await decodeToken(accessToken) as DecodedToken;
-                email = decodedToken.email || decodedToken.upn;
+            headers = {
+                ...headers, "Authorization": `Bearer ${accessToken}`
             }
-            catch (error) {
-                console.error('Failed to decode token', error);
-            }
-            headers = { ...headers, "Authorization": `Bearer ${accessToken}`, "X-User-Principal-Name": `${email}` }
         }
-    }
-    else {
-        headers = { ...headers, "X-User-Principal-Name": `test.user@test.com` }
     }
 
     return await fetch(`${import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers })

@@ -172,3 +172,10 @@
     border-radius: 40px;
     border: transparent;
   }
+
+  @media (max-width: 1215px) {
+    .buttonGroup {
+      flex-direction: column; /* Switch to vertical direction on small screens */
+      width: 150px;
+    }
+  }

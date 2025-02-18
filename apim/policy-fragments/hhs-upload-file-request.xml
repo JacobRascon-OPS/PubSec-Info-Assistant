@@ -9,7 +9,10 @@
         return lines.Length > 0 ? lines[0] : string.Empty;
     }" />
 	<!-- setting userEmail -->
-	<set-variable name="userEmail" value="@(context.Request.Headers.GetValueOrDefault("x-user-principal-name"))" />
+	<set-variable name="userEmail" value="@{
+     var jwt = context.Request.Headers.GetValueOrDefault("Authorization").AsJwt();
+    return jwt?.Claims.GetValueOrDefault("email")?? jwt?.Claims.GetValueOrDefault("upn") ?? "unknown";
+}" />
 	<!-- setting the upload Source -->
 	<set-variable name="uploadSource" value="@{
         string body = context.Request.Body.As<string>(preserveContent: true);  
