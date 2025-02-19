@@ -59,6 +59,11 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
     selection: {
 
       mode: "multiple"
+    },
+    commands: {
+        pick: {
+            action: "download"
+        }
     }
   }
 
@@ -267,6 +272,7 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   window.addEventListener("message", messageEvent);
 
   const pick = async (command: any) => {
+    console.log(command)
     handleOnChange(command.items)
     win?.close()
   }
@@ -280,12 +286,21 @@ const OneDriveFilePicker = ({ folderPath, tags }: Props) => {
   const getFile = async (data: any, accessToken: string) => {
 
     try {
-      let downloadUrl = `${data["@sharePoint.endpoint"]}/drives/${data.parentReference.driveId}/items/${data.id}`;
-      const downloadResponse = await fetch(downloadUrl, {
+      let downloadLinkUrl = `${data["@sharePoint.endpoint"]}/drives/${data.parentReference.driveId}/items/${data.id}`;
+      const downloadLinkResponse = await fetch(downloadLinkUrl, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+      });
+
+      if (!downloadLinkResponse.ok) {
+        throw new Error(`Download failed: ${downloadLinkResponse.statusText}`);
+      }
+
+      const downloadUrl =  (await downloadLinkResponse.json())["@content.downloadUrl"]
+      const downloadResponse = await fetch(downloadUrl, {
+        method: "GET"
       });
 
       if (!downloadResponse.ok) {
