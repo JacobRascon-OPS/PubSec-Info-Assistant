@@ -30,13 +30,10 @@ export const Title = () => {
         fetchApplicationTitle();
     }, []);
 
-     {/* {Title?.APPLICATION_TITLE || 'HHS Chat GPT'} */}
-
     return (<div className={styles.titleWithLogoContainer}>
         <Chat48Regular />
         <div className={styles.titleContainer}>           
-            <h4 className={styles.titleHero}>HHS</h4>
-            <h6 className={styles.titleCaption}>Chat GPT</h6>
+            <h4 className={styles.titleHero}> {Title?.APPLICATION_TITLE || 'Empower-GPT'}</h4>
         </div>
     </div>);
 };

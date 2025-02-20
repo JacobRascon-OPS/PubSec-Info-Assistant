@@ -13,6 +13,8 @@ locals {
     name   = "hub-vnet"
     vnetId = var.hubVnetId
   }] : []
+
+  enableBingSafeSearch = var.azure_environment == "AzureUSGovernment" ? false : var.is_secure_mode ? false : var.enableBingSafeSearch && var.enableWebChat ? true : false
 }
 
 data "azurerm_client_config" "current" {}
@@ -485,9 +487,9 @@ module "webapp" {
     AZURE_AI_LOCATION                     = var.location
     APPLICATION_TITLE                     = var.applicationtitle == "" ? "Information Assistant, built with Azure OpenAI" : var.applicationtitle
     USE_SEMANTIC_RERANKER                 = var.use_semantic_reranker
-    BING_SEARCH_ENDPOINT                  = var.enableWebChat ? module.bingSearch[0].endpoint : ""
+    BING_SEARCH_ENDPOINT                  = local.enableBingSafeSearch ? module.bingSearch[0].endpoint : ""
     ENABLE_WEB_CHAT                       = var.enableWebChat
-    ENABLE_BING_SAFE_SEARCH               = var.enableBingSafeSearch
+    ENABLE_BING_SAFE_SEARCH               = local.enableBingSafeSearch
     ENABLE_UNGROUNDED_CHAT                = var.enableUngroundedChat
     ENABLE_MATH_ASSISTANT                 = var.enableMathAssitant
     ENABLE_TABULAR_DATA_ASSISTANT         = var.enableTabularDataAssistant
@@ -749,7 +751,7 @@ module "azMonitor" {
 
 // Bing Search is not supported in US Government or Secure Mode
 module "bingSearch" {
-  count                        = var.azure_environment == "AzureUSGovernment" ? 0 : var.is_secure_mode ? 0 : var.enableWebChat ? 1 : 0
+  count                        = local.enableBingSafeSearch ? 1 : 0
   source                       = "./core/ai/bingSearch"
   name                         = "bing-infoasst-${local.random_string}"
   resourceGroupName            = azurerm_resource_group.app_rg.name

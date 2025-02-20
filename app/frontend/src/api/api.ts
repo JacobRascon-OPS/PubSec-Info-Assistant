@@ -59,7 +59,7 @@ export async function fetchApi(
         }
     }
 
-    return await fetch(`${import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers })
+    return await fetch(`${import.meta.env.VITE_ENVIRONMENT === 'local' ? "" : import.meta.env.VITE_API_ENDPOINT}${input}`, { ...init, headers: headers })
 }
 
 export async function chatApi(options: ChatRequest, signal: AbortSignal): Promise<Response> {

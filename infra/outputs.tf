@@ -168,15 +168,15 @@ output "AZURE_ENVIRONMENT" {
 }
 
 output "BING_SEARCH_ENDPOINT" {
-  value = var.enableWebChat ? module.bingSearch[0].endpoint : ""
+  value = local.enableBingSafeSearch ? module.bingSearch[0].endpoint : ""
 }
 
 output "BING_SEARCH_KEY" {
-  value = var.enableWebChat ? module.bingSearch[0].key : ""
+  value = local.enableBingSafeSearch ? module.bingSearch[0].key : ""
 }
 
 output "ENABLE_BING_SAFE_SEARCH" {
-  value = var.enableBingSafeSearch
+  value = local.enableBingSafeSearch
 }
 
 output "AZURE_ARM_MANAGEMENT_API" {

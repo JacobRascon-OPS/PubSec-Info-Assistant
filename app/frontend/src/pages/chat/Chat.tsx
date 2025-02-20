@@ -28,6 +28,7 @@ import { FolderPicker } from "../../components/FolderPicker";
 import { TagPickerInline } from "../../components/TagPicker";
 import React from "react";
 import { Disclaimer } from "../../components/Disclaimer/Disclaimer";
+import logo from "../../assets/logo.png";
 
 const Chat = () => {
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
@@ -390,7 +391,8 @@ const Chat = () => {
                                         : //else Ungrounded
                                         <div>
                                             <div className={styles.chatEmptyStateHeader}>
-                                                <ChatSparkleFilled fontSize={"80px"} primaryFill={"rgba(0, 0, 0, 0.35)"} aria-hidden="true" aria-label="Chat logo" />
+                                                <img src={logo} alt="U.S. Department of HHS" className={styles.conversationalAiLogo} />
+                                                {/* <ChatSparkleFilled fontSize={"80px"} primaryFill={"rgba(0, 0, 0, 0.35)"} aria-hidden="true" aria-label="Chat logo" /> */}
                                             </div>
                                             <h1 className={styles.chatEmptyStateTitle}>Conversational AI</h1>
                                         </div>

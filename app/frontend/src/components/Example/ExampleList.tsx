@@ -11,9 +11,18 @@ export type ExampleModel = {
 };
 
 const EXAMPLES: ExampleModel[] = [
-    { text: "What is Zero Trust?", value: "What is Zero Trust?" },
-    { text: "What is the difference between GPT 3.5 and 4?", value: "What is the difference between GPT 3.5 and 4?" },
-    { text: "What is Conversational AI?", value: "What is Conversational AI?" }
+    {
+        text: "I want to rewrite my email, how would I ask you to rewrite it taking into account the audience and tone of I want to use for my email? Breakdown how I should ask, and what information to provide.",
+        value: "I want to rewrite my email, how would I ask you to rewrite it taking into account the audience and tone of I want to use for my email? Breakdown how I should ask, and what information to provide."
+    },
+    {
+        text: "I want to take a Teams Meeting and turn it into notes and action items. How would I ask you to take my transcribed notes and convert them to notes and actions? Give me a detailed example, please.",
+        value: "I want to take a Teams Meeting and turn it into notes and action items. How would I ask you to take my transcribed notes and convert them to notes and actions? Give me a detailed example, please."
+    },
+    {
+        text: "I need your help with reviewing, categorizing, referencing, and summarizing data from ten reports. How can I request AI for this? Please break it down into examples and a final request.",
+        value: "I need your help with reviewing, categorizing, referencing, and summarizing data from ten reports. How can I request AI for this? Please break it down into examples and a final request."
+    }
 ];
 
 interface Props {

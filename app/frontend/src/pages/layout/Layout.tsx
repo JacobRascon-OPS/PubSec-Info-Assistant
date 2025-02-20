@@ -34,6 +34,11 @@ export const Layout = () => {
                     <div className={styles.headerTitleContainer}>
                         <img src={logo} alt="U.S. Department of HHS" className={styles.headerLogo} />
                     </div>
+                    <div className={styles.appDescription}>
+                        <h5>
+                            Efficient Management and Productivity Optimization with Empowerment Resources GPT-powered.
+                        </h5>
+                    </div>
                 </div>
 
             </header>
