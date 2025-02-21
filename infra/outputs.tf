@@ -234,7 +234,7 @@ output "AZURE_SEARCH_AUDIENCE" {
 }
 
 output "AZURE_AD_CLIENT_ID" {
-  value = module.entraObjects.azure_ad_mgmt_app_client_id
+  value = module.entraObjects.azure_ad_web_app_client_id
 }
 
 output "AZURE_AD_TENANT_ID" {

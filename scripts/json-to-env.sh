@@ -119,6 +119,14 @@ jq -r  '
             "env_var": "VITE_OCP_APIM_SUBSCRIPTION_KEY"
         },
         {
+            "path": "AZURE_AD_CLIENT_ID",
+            "env_var": "VITE_AZURE_AD_CLIENT_ID"
+        },
+        {
+            "path": "AZURE_AD_TENANT_ID",
+            "env_var": "VITE_AZURE_AD_TENANT_ID"
+        },
+        {
             "path": "CONTAINER_REGISTRY",
             "env_var": "CONTAINER_REGISTRY"
         },

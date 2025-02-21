@@ -1029,6 +1029,7 @@ module "apim" {
   appInsightsConnectionString   = module.logging.applicationInsightsConnectionString
   appInsightsInstrumentationKey = module.logging.applicationInsightsInstrumentationKey
   appInsightsResourceId         = module.logging.applicationInsightsId
+  hubVnetId                     = var.hubVnetId
   operationPolicies = [
     {
       operationId   = "chat_chat_post"

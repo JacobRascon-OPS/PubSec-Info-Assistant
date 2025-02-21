@@ -102,3 +102,8 @@ variable "appInsightsInstrumentationKey" {
 variable "appInsightsResourceId" {
   type = string
 }
+
+variable "hubVnetId" {
+  type = string
+  default = ""
+}
