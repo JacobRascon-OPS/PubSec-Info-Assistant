@@ -146,7 +146,7 @@ const Content = () => {
                     </div>
                 </PivotItem>
                 <PivotItem headerText="Upload Status" aria-label="Upload Status Tab">
-                    <FileStatus className="" />
+                    <FileStatus className="" featureFlags={featureFlags} />
                 </PivotItem>
             </Pivot>
         </div>
