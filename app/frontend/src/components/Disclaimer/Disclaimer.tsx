@@ -9,7 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { CursorClick24Filled } from "@fluentui/react-icons";
 
 export const Disclaimer = ({ onDiclamainerAcceptanceClick }: { onDiclamainerAcceptanceClick: (event: any) => void }) => {
-    const [Title, setTitle] = useState<ApplicationTitle>({ APPLICATION_TITLE: 'EMPOWER GPT' });
+    const [Title, setTitle] = useState<ApplicationTitle>({ APPLICATION_TITLE: 'Empower-GPT' });
     const [DisclaimerContent, setDisclaimerText] = useState<DisclaimerText | null>(null);
 
     async function fetchApplicationTitle() {

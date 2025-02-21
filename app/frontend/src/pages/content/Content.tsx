@@ -29,7 +29,7 @@ const Content = () => {
     const [selectedTags, setSelectedTags] = useState<string[] | undefined>(undefined);
     const [selectedApproach, setSelectedApproach] = useState<number | undefined>(undefined);
     const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
-    const [Title, setTitle] = useState<ApplicationTitle>({ APPLICATION_TITLE: 'EMPOWER GPT' });
+    const [Title, setTitle] = useState<ApplicationTitle>({ APPLICATION_TITLE: 'Empower-GPT' });
 
     const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
 
