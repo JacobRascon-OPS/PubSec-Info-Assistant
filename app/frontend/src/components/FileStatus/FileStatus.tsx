@@ -7,7 +7,7 @@ import { Stack } from "@fluentui/react";
 import { DocumentsDetailList, IDocument } from "./DocumentsDetailList";
 import { ArrowClockwise24Filled } from "@fluentui/react-icons";
 import { animated, useSpring } from "@react-spring/web";
-import { getAllUploadStatus, FileUploadBasicStatus, GetUploadStatusRequest, FileState, getFolders, getTags } from "../../api";
+import { getAllUploadStatus, FileUploadBasicStatus, GetUploadStatusRequest, FileState, getFolders, getTags, GetFeatureFlagsResponse } from "../../api";
 
 import styles from "./FileStatus.module.css";
 
@@ -24,7 +24,7 @@ const dropdownTimespanOptions = [
     { key: '7days', text: '7 days' },
     { key: '30days', text: '30 days' },
     { key: '-1days', text: 'All' },
-  ];
+];
 
 const dropdownFileStateOptions = [
     { key: 'FileStates', text: 'File States', itemType: DropdownMenuItemType.Header },
@@ -34,19 +34,20 @@ const dropdownFileStateOptions = [
     { key: FileState.Processing, text: 'Processing' },
     { key: FileState.Indexing, text: 'Indexing' },
     { key: FileState.Queued, text: 'Queued' },
-    { key: FileState.Skipped, text: 'Skipped'},
-    { key: FileState.UPLOADED, text: 'Uploaded'},
-    { key: FileState.THROTTLED, text: 'Throttled'},    
-    { key: FileState.DELETING, text: 'Deleting'},  
-    { key: FileState.DELETED, text: 'Deleted'},  
-  ];
+    { key: FileState.Skipped, text: 'Skipped' },
+    { key: FileState.UPLOADED, text: 'Uploaded' },
+    { key: FileState.THROTTLED, text: 'Throttled' },
+    { key: FileState.DELETING, text: 'Deleting' },
+    { key: FileState.DELETED, text: 'Deleted' },
+];
 
 
 interface Props {
     className?: string;
+    featureFlags: GetFeatureFlagsResponse | null
 }
 
-export const FileStatus = ({ className }: Props) => {
+export const FileStatus = ({ className, featureFlags }: Props) => {
     const [selectedTimeFrameItem, setSelectedTimeFrameItem] = useState<IDropdownOption>();
     const [selectedFileStateItem, setSelectedFileStateItem] = useState<IDropdownOption>();
     const [SelectedFolderItem, setSelectedFolderItem] = useState<IDropdownOption>();
@@ -67,11 +68,11 @@ export const FileStatus = ({ className }: Props) => {
 
     const onFolderChange = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption<any> | undefined): void => {
         setSelectedFolderItem(item);
-    };    
+    };
 
     const onTagChange = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption<any> | undefined): void => {
         setSelectedTagItem(item);
-    };  
+    };
 
     const onFilesSorted = (items: IDocument[]): void => {
         setFiles(items);
@@ -147,8 +148,8 @@ export const FileStatus = ({ className }: Props) => {
     // Effect to fetch folders & tags on mount
     useEffect(() => {
         fetchFolders();
-        fetchTags();        
-        onGetStatusClick()       
+        fetchTags();
+        onGetStatusClick()
     }, []);
 
     function convertStatusToItems(fileList: FileUploadBasicStatus[]) {
@@ -202,45 +203,47 @@ export const FileStatus = ({ className }: Props) => {
         <div className={styles.container}>
             <div className={`${styles.options} ${className ?? ""}`} >
                 <Dropdown
-                        label="Uploaded in last:"
-                        defaultSelectedKey='4hours'
-                        onChange={onTimeSpanChange}
-                        placeholder="Select a time range"
-                        options={dropdownTimespanOptions}
-                        styles={dropdownTimespanStyles}
-                        aria-label="timespan options for file statuses to be displayed"
-                    />
-                <Dropdown
-                        label="File State:"
-                        defaultSelectedKey={'ALL'}
-                        onChange={onFileStateChange}
-                        placeholder="Select file states"
-                        options={dropdownFileStateOptions}
-                        styles={dropdownFileStateStyles}
-                        aria-label="file state options for file statuses to be displayed"
-                    />
-                <Dropdown
-                    label="Folder:"
-                    defaultSelectedKey={'Root'}
-                    onChange={onFolderChange}
-                    placeholder="Select folder"
-                    options={folderOptions}
-                    styles={dropdownFolderStyles}
-                    aria-label="folder options for file statuses to be displayed"
+                    label="Uploaded in last:"
+                    defaultSelectedKey='4hours'
+                    onChange={onTimeSpanChange}
+                    placeholder="Select a time range"
+                    options={dropdownTimespanOptions}
+                    styles={dropdownTimespanStyles}
+                    aria-label="timespan options for file statuses to be displayed"
                 />
                 <Dropdown
-                    label="Tag:"
-                    defaultSelectedKey={'All'}
-                    onChange={onTagChange}
-                    placeholder="Select a tag"
-                    options={tagOptions}
-                    styles={dropdownTagStyles}
-                    aria-label="tag options for file statuses to be displayed"
+                    label="File State:"
+                    defaultSelectedKey={'ALL'}
+                    onChange={onFileStateChange}
+                    placeholder="Select file states"
+                    options={dropdownFileStateOptions}
+                    styles={dropdownFileStateStyles}
+                    aria-label="file state options for file statuses to be displayed"
                 />
+                {featureFlags?.ENABLE_FILE_FOLDERS &&
+                    <Dropdown
+                        label="Folder:"
+                        defaultSelectedKey={'Root'}
+                        onChange={onFolderChange}
+                        placeholder="Select folder"
+                        options={folderOptions}
+                        styles={dropdownFolderStyles}
+                        aria-label="folder options for file statuses to be displayed"
+                    />}
+                {featureFlags?.ENABLE_FILE_TAGS &&
+                    <Dropdown
+                        label="Tag:"
+                        defaultSelectedKey={'All'}
+                        onChange={onTagChange}
+                        placeholder="Select a tag"
+                        options={tagOptions}
+                        styles={dropdownTagStyles}
+                        aria-label="tag options for file statuses to be displayed"
+                    />}
             </div>
             {isLoading ? (
                 <animated.div style={{ ...animatedStyles }}>
-                     <Stack className={styles.loadingContainer} verticalAlign="space-between">
+                    <Stack className={styles.loadingContainer} verticalAlign="space-between">
                         <Stack.Item grow>
                             <p className={styles.loadingText}>
                                 Getting file statuses
@@ -251,7 +254,7 @@ export const FileStatus = ({ className }: Props) => {
                 </animated.div>
             ) : (
                 <div className={styles.resultspanel}>
-                    <DocumentsDetailList items={files == undefined ? [] : files} onFilesSorted={onFilesSorted} onRefresh={onGetStatusClick}/>
+                    <DocumentsDetailList items={files == undefined ? [] : files} onFilesSorted={onFilesSorted} onRefresh={onGetStatusClick} />
                 </div>
             )}
         </div>
