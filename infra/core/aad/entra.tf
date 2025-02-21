@@ -21,6 +21,10 @@ resource "azuread_application" "aad_web_app" {
       id_token_issuance_enabled     = true
     }
   }
+
+  single_page_application {
+    redirect_uris = ["https://app-infoasst-${var.randomString}.${var.azure_websites_domain}"]
+  }
 }
 
 resource "azuread_application_password" "aad_web_app_password" {

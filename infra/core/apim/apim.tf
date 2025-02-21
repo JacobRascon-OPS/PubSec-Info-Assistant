@@ -208,6 +208,14 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink" {
   virtual_network_id    = data.azurerm_virtual_network.vnet[0].id
 }
 
+resource "azurerm_private_dns_zone_virtual_network_link" "hub_vnetlink" {
+  count                 = var.is_secure_mode && var.hubVnetId != "" ? 1 : 0
+  name                  = "hub-vnet"
+  resource_group_name   = var.networkResourceGroupName
+  private_dns_zone_name = azurerm_private_dns_zone.dns[0].name
+  virtual_network_id    = var.hubVnetId
+}
+
 resource "azurerm_private_dns_a_record" "gateway" {
   count               = var.is_secure_mode ? 1 : 0
   name                = var.name
