@@ -9,7 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { CursorClick24Filled } from "@fluentui/react-icons";
 
 export const Disclaimer = ({ onDiclamainerAcceptanceClick }: { onDiclamainerAcceptanceClick: (event: any) => void }) => {
-    const [Title, setTitle] = useState<ApplicationTitle | null>(null);
+    const [Title, setTitle] = useState<ApplicationTitle>({ APPLICATION_TITLE: 'EMPOWER GPT' });
     const [DisclaimerContent, setDisclaimerText] = useState<DisclaimerText | null>(null);
 
     async function fetchApplicationTitle() {
@@ -51,7 +51,7 @@ export const Disclaimer = ({ onDiclamainerAcceptanceClick }: { onDiclamainerAcce
 
     return (<div className={styles.disclaimer}>
         <h3>
-            Welcome to  {Title?.APPLICATION_TITLE || 'HHS Chat GPT'}
+            Welcome to  {Title?.APPLICATION_TITLE}
         </h3>
         <div className={styles.disclaimerTextContainer}>
             <ReactMarkdown>{DisclaimerContent?.Content}</ReactMarkdown>
@@ -59,7 +59,7 @@ export const Disclaimer = ({ onDiclamainerAcceptanceClick }: { onDiclamainerAcce
         <div>
             <PrimaryButton className={styles.disclaimerAcceptanceButton} onClick={onDiclamainerAcceptanceClick}>
                 <CursorClick24Filled className={styles.clickIcon} />
-                Access HHS GPT
+                Access {Title?.APPLICATION_TITLE}
             </PrimaryButton>
         </div>
     </div>);

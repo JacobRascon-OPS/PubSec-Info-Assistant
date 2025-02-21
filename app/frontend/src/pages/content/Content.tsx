@@ -17,6 +17,7 @@ import styles from "./Content.module.css";
 import { OneDriveFilePicker } from '../../components/filepicker/onedrive-file-picker';
 import Switch from 'react-switch';
 import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
+import { ApplicationTitle, getApplicationTitle, DisclaimerText, getDisclaimerText } from "../../api";
 
 export interface IButtonExampleProps {
     disabled?: boolean;
@@ -28,10 +29,11 @@ const Content = () => {
     const [selectedTags, setSelectedTags] = useState<string[] | undefined>(undefined);
     const [selectedApproach, setSelectedApproach] = useState<number | undefined>(undefined);
     const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
+    const [Title, setTitle] = useState<ApplicationTitle>({ APPLICATION_TITLE: 'EMPOWER GPT' });
 
     const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
 
-    async function fetchFeatureFlags() {
+    async function fetchConfigs() {
         try {
             const fetchedFeatureFlags = await getFeatureFlags();
             setFeatureFlags(fetchedFeatureFlags);
@@ -39,10 +41,21 @@ const Content = () => {
             // Handle the error here
             console.log(error);
         }
+        try {
+            const v = await getApplicationTitle();
+            if (!v.APPLICATION_TITLE) {
+                return null;
+            }
+
+            setTitle(v);
+        } catch (error) {
+            // Handle the error here
+            console.log(error);
+        }
     }
 
     useEffect(() => {
-        fetchFeatureFlags();
+        fetchConfigs();
     }, []);
 
     const onSelectedKeyChanged = (selectedFolder: string[]) => {
@@ -75,7 +88,7 @@ const Content = () => {
                             <SparkleFilled fontSize={"60px"} primaryFill={"rgba(0, 94, 162, 1)"} aria-hidden="true" aria-label="Supported File Types" />
                             <h1 className={styles.EmptyStateTitle}>Supported file types</h1>
                             <span className={styles.EmptyObjectives}>
-                                The HHS Chat GPT currently supports the following file types:
+                                The {Title.APPLICATION_TITLE} currently supports the following file types:
                             </span>
                             <span className={styles.EmptyObjectivesList}>
                                 <span className={styles.EmptyObjectivesListItem}>
