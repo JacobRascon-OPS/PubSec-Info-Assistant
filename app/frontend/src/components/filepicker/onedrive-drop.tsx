@@ -285,12 +285,6 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
     console.log(command)
     handleOnChange(command.items)
     win?.close()
-    return;
-    const timer = setTimeout(() => {
-      if (uploadRef.current) {
-        uploadRef.current();
-      }
-    }, 1000);
 
     
   }
@@ -359,7 +353,7 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
   const canShowProgress = useMemo(() => files.length > 0, [files.length]);
 
   // execute the upload operation  
-  const handleUpload = useCallback(async () => {
+  const downloadFiles = async () => {
     try {
       const data = new FormData();
       setUploadStarted(true);
@@ -392,8 +386,11 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
     } catch (error) {
       console.log(error);
     }
-  }, [files, folderPath]);
-  const uploadRef = useRef(handleUpload);
+  };
+  useEffect(() => {
+    downloadFiles();
+  }, [files]);
+  const handleUpload = useCallback(downloadFiles, [files, folderPath])
 
   // set progress to zero when there are no files  
   useEffect(() => {
@@ -431,7 +428,7 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
         </div>
       </div>
       {/* files listing */}
-      {files.length ? (
+      {false && files.length ? (
         <div className={styles.files_list_wrapper}>
           {uploadStarted && (
             <div className={styles.spinner_overlay}>
@@ -452,7 +449,7 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
         </div>
       ) : null}
       {/* upload button */}
-      {files.length ? (
+      {false && files.length ? (
         <button
           onClick={handleUpload}
           className={classNames(
