@@ -19,6 +19,7 @@ import CharacterStreamer from '../../components/CharacterStreamer/CharacterStrea
 import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
 import { OneDriveDrop } from '../../components/filepicker/onedrive-drop';
 import Switch from 'react-switch';
+import { UrlFile } from '../../components/filepicker/UrlFile';
 
 interface Props {
   folderPath: string;
@@ -203,12 +204,19 @@ const fetchImages = async () => {
       setUploadStarted(true);
       files.forEach(async (indexedFile: any) => {  
           var file = indexedFile.file as File;
+
+          if( file instanceof UrlFile)
+          {
+            var urlfile =  file as UrlFile
+            file = await (urlfile.promiseFile ?? urlfile.getFile())
+          }
           console.log('MAX_CSV_FILE_SIZE:', MAX_CSV_FILE_SIZE);
           if (file.size > MAX_CSV_FILE_SIZE) {
             alert(`File is too large. Please upload a file smaller than ${maxCSVFileSize?.MAX_CSV_FILE_SIZE} MB.`);
             setUploadStarted(false);
             return;
             }
+            console.log('parse file', file)
             Papa.parse(file, {
               header: true,
               dynamicTyping: true,

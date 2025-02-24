@@ -11,6 +11,7 @@ import { fetchApi, getOneDriveAuthConfig, logStatus, StatusLogClassification, St
 import { getToken } from './auth'
 import { useMsal } from "@azure/msal-react";
 import { useRef } from "react";
+import { UrlFile } from "./UrlFile";
 
 interface Props {
   folderPath: string;
@@ -365,15 +366,9 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
       }
 
       const uploadPromises : Promise<File | null>[] = files.map(async (indexedFile: any, index: any) => {
-        const file : File | null = await getFile(indexedFile.file, accessToken);
-        if (file) {
-          const filePath = `${folderPath}/${indexedFile.file.name}`;
-
-          // Increment the counter for successfully uploaded files
-          uploadedFilesCount++;
-          setProgress((uploadedFilesCount / files.length) * 100);
-        }
-        return file;
+        console.log(indexedFile)
+        uploadedFilesCount++;
+        return new UrlFile(indexedFile.file, accessToken);
       });
       const uploadedFiles = await Promise.all(uploadPromises);
       const validFiles = uploadedFiles.filter((file): file is File  => file !== null);
@@ -443,7 +438,7 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
         </div>
       ) : null}
       {/* progress bar */}
-      {canShowProgress ? (
+      {false && canShowProgress ? (
         <div className={styles.files_list_progress_wrapper}>
           <progress value={progress} max={100} style={{ width: "100%" }} />
         </div>
