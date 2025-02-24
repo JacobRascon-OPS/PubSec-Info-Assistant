@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { ApplicationTitle, getApplicationTitle } from "../../api";
 import styles from './Title.module.css'
 import { Chat48Regular } from "@fluentui/react-icons";
-import appLogo from "../../assets/app-logo.png";
 
 export const Title = () => {
     const [Title, setTitle] = useState<ApplicationTitle | null>(null);
@@ -32,8 +31,7 @@ export const Title = () => {
     }, []);
 
     return (<div className={styles.titleWithLogoContainer}>
-        {/* <Chat48Regular /> */}
-        <img src={appLogo} alt="U.S. Department of HHS" className={styles.logo} />
+        <Chat48Regular />
         <div className={styles.titleContainer}>           
             <h4 className={styles.titleHero}> {Title?.APPLICATION_TITLE || 'Empower-GPT'}</h4>
         </div>

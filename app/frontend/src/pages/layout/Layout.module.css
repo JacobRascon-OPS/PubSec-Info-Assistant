@@ -119,6 +119,12 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+   
+
+    background-image: url('../../assets/app-logo.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: right bottom;
 }
 
 .footer {
