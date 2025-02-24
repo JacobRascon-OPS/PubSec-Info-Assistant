@@ -351,7 +351,7 @@ const handleCloseEvent = () => {
     <div className={styles.wrapper}>
       
       {/* canvas */}
-      {(true || (featureFlags?.ENABLE_LOCAL_FILES ?? false)) && (
+      {((featureFlags?.ENABLE_LOCAL_FILES ?? false)) && (
         <div className={styles.FileSelector}>
           <span>Would you like to upload local files? </span>
           <Switch height={20} onChange={handleToggle} checked={isLocalFileSelection} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#CCCCC" />
