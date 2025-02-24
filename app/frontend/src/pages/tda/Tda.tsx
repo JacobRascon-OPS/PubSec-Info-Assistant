@@ -16,7 +16,9 @@ import estyles from "../../components/Example/Example.module.css";
 import { Example } from "../../components/Example";
 import { DocumentDataFilled, TableSearchFilled } from "@fluentui/react-icons";
 import CharacterStreamer from '../../components/CharacterStreamer/CharacterStreamer';
-
+import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
+import { OneDriveDrop } from '../../components/filepicker/onedrive-drop';
+import Switch from 'react-switch';
 
 interface Props {
   folderPath: string;
@@ -41,7 +43,26 @@ const Tda = ({folderPath, tags}: Props) => {
   const [images, setImages] = useState<string[]>([]);
   const eventSourceRef = useRef<EventSource | null>(null);
   const [maxCSVFileSize, setMaxCSVFileSize] = useState<getMaxCSVFileSizeType | null>(null);
+  const [isLocalFileSelection, setIsLocalFileSelection] = useState<boolean>(false);
+  const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
 
+  const handleToggle = () => {
+    setIsLocalFileSelection(!isLocalFileSelection);
+}
+
+  async function fetchFeatureFlags() {
+      try {
+          const fetchedFeatureFlags = await getFeatureFlags();
+          setFeatureFlags(fetchedFeatureFlags);
+      } catch (error) {
+          // Handle the error here
+          console.log(error);
+      }
+  }
+
+  useEffect(() => {
+      fetchFeatureFlags();
+  }, []);
 
   type ExampleModel = {
     text: string;
@@ -140,9 +161,11 @@ const fetchImages = async () => {
   
   const handleOnChange = useCallback((files: any) => {
     let filesArray = Array.from(files);
-  
-    filesArray = filesArray.filter((file: any) => file.type === 'text/csv');
-  
+    //console.log('tda files', filesArray)
+
+    filesArray = filesArray.filter((file: any) => file.type === 'text/csv' || file.name.includes('csv'));
+    //console.log('filter tda files', filesArray)
+
     filesArray = filesArray.map((file: any) => ({
       id: nanoid(),
       file
@@ -328,8 +351,18 @@ const handleCloseEvent = () => {
     <div className={styles.wrapper}>
       
       {/* canvas */}
+      {(true || (featureFlags?.ENABLE_LOCAL_FILES ?? false)) && (
+        <div className={styles.FileSelector}>
+          <span>Would you like to upload local files? </span>
+          <Switch height={20} onChange={handleToggle} checked={isLocalFileSelection} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#CCCCC" />
+        </div>
+      )}
+
+
       <div className={styles.canvas_wrapper}>
-        <DropZone onChange={handleOnChange} accept={files} />
+      {isLocalFileSelection && <DropZone onChange={handleOnChange} accept={files} />}
+      {!isLocalFileSelection && <OneDriveDrop onChange={handleOnChange} accept={files} />}
+        
       </div>
 
       {/* files listing */}
