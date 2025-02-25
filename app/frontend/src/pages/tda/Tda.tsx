@@ -19,7 +19,7 @@ import CharacterStreamer from '../../components/CharacterStreamer/CharacterStrea
 import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
 import { OneDriveDrop } from '../../components/filepicker/onedrive-drop';
 import Switch from 'react-switch';
-import { OneDriveFile } from '../../components/filepicker/UrlFile';
+import { OneDriveFile } from '../../components/filepicker/OneDriveFile';
 
 interface Props {
   folderPath: string;

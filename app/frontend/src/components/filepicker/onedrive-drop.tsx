@@ -11,7 +11,7 @@ import { fetchApi, getOneDriveAuthConfig, logStatus, StatusLogClassification, St
 import { getToken } from './auth'
 import { useMsal } from "@azure/msal-react";
 import { useRef } from "react";
-import { OneDriveFile } from "./UrlFile";
+import { OneDriveFile } from "./OneDriveFile";
 
 interface Props {
   folderPath: string;
