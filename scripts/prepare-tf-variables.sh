@@ -58,3 +58,4 @@ export TF_VAR_index=$INDEX
 export TF_VAR_enableLocalFiles=$ENABLE_LOCAL_FILES
 export TF_VAR_enableFileTags=$ENABLE_FILE_TAGS
 export TF_VAR_enableFileUploads=$ENABLE_FILE_FOLDERS
+export TF_VAR_hubVnetId=$HUB_VNET_ID
