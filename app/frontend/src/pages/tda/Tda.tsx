@@ -19,6 +19,7 @@ import CharacterStreamer from '../../components/CharacterStreamer/CharacterStrea
 import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
 import { OneDriveDrop } from '../../components/filepicker/onedrive-drop';
 import Switch from 'react-switch';
+import { OneDriveFile } from '../../components/filepicker/OneDriveFile';
 
 interface Props {
   folderPath: string;
@@ -203,12 +204,19 @@ const fetchImages = async () => {
       setUploadStarted(true);
       files.forEach(async (indexedFile: any) => {  
           var file = indexedFile.file as File;
+
+          if( file instanceof OneDriveFile)
+          {
+            var urlfile =  file as OneDriveFile
+            file = await (urlfile.promiseFile ?? urlfile.getFile())
+          }
           console.log('MAX_CSV_FILE_SIZE:', MAX_CSV_FILE_SIZE);
           if (file.size > MAX_CSV_FILE_SIZE) {
             alert(`File is too large. Please upload a file smaller than ${maxCSVFileSize?.MAX_CSV_FILE_SIZE} MB.`);
             setUploadStarted(false);
             return;
             }
+            console.log('parse file', file)
             Papa.parse(file, {
               header: true,
               dynamicTyping: true,
@@ -351,7 +359,7 @@ const handleCloseEvent = () => {
     <div className={styles.wrapper}>
       
       {/* canvas */}
-      {(true || (featureFlags?.ENABLE_LOCAL_FILES ?? false)) && (
+      {((featureFlags?.ENABLE_LOCAL_FILES ?? false)) && (
         <div className={styles.FileSelector}>
           <span>Would you like to upload local files? </span>
           <Switch height={20} onChange={handleToggle} checked={isLocalFileSelection} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#CCCCC" />
