@@ -26,8 +26,6 @@ interface UploadedFile {
 const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: string[]}) => {
 
   const [files, setFiles] = useState<any>([]);
-  const [progress, setProgress] = useState(0);
-  const [uploadStarted, setUploadStarted] = useState(false);
   const {instance} = useMsal();
   const [baseUrl, setBaseUrl] = useState<string | null>(null);
   const folderPath = "onedrive";
@@ -341,8 +339,6 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
       file,
     }));
     setFiles(filesArray as any);
-    setProgress(0);
-    setUploadStarted(false);
   }, []);
 
   // handle for removing files form the files list view  
@@ -350,15 +346,12 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
     setFiles((prev: any) => prev.filter((file: any) => file.id !== id));
   }, []);
 
-  // whether to show the progress bar or not  
-  const canShowProgress = useMemo(() => files.length > 0, [files.length]);
+
 
   // execute the upload operation  
   const downloadFiles = async () => {
     try {
       const data = new FormData();
-      setUploadStarted(true);
-      let uploadedFilesCount = 0;
       const accessToken = await getAccessToken()
 
       if (!accessToken) {
@@ -367,7 +360,6 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
 
       const uploadPromises : Promise<File | null>[] = files.map(async (indexedFile: any, index: any) => {
         console.log(indexedFile)
-        uploadedFilesCount++;
         return new OneDriveFile(indexedFile.file, accessToken);
       });
       const uploadedFiles = await Promise.all(uploadPromises);
@@ -376,8 +368,6 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
 
 
       onChange(uploadedFiles);
-
-      setUploadStarted(false);
     } catch (error) {
       console.log(error);
     }
@@ -387,25 +377,13 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
   }, [files]);
   const handleUpload = useCallback(downloadFiles, [files, folderPath])
 
-  // set progress to zero when there are no files  
-  useEffect(() => {
-    if (files.length < 1) {
-      setProgress(0);
-    }
-  }, [files.length]);
 
-  // set uploadStarted to false when the upload is complete  
-  useEffect(() => {
-    if (progress === 100) {
-      setUploadStarted(false);
-    }
-  }, [progress]);
 
   useEffect(() => {
     setupOneDriveAuthentication();
   }, [])
 
-  const uploadComplete = useMemo(() => progress === 100, [progress]);
+
 
   return (
     <div className={styles.wrapper}>
@@ -422,40 +400,6 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
           <span className={styles.banner_text}>Click to add files from OneDrive</span>
         </div>
       </div>
-      {/* files listing */}
-      {false && files.length ? (
-        <div className={styles.files_list_wrapper}>
-          {uploadStarted && (
-            <div className={styles.spinner_overlay}>
-              <SpinnerIos16Filled className={styles.spinner} />
-            </div>
-          )}
-          <FilesList
-            files={files}
-            onClear={handleClearFile}
-            uploadComplete={uploadComplete}
-          />
-        </div>
-      ) : null}
-      {/* progress bar */}
-      {false && canShowProgress ? (
-        <div className={styles.files_list_progress_wrapper}>
-          <progress value={progress} max={100} style={{ width: "100%" }} />
-        </div>
-      ) : null}
-      {/* upload button */}
-      {false && files.length ? (
-        <button
-          onClick={handleUpload}
-          className={classNames(
-            styles.upload_button,
-            uploadComplete || uploadStarted ? styles.disabled : ""
-          )}
-          aria-label="upload files"
-        >
-          {`Download ${files.length} Files`}
-        </button>
-      ) : null}
     </div>
   );
 };
