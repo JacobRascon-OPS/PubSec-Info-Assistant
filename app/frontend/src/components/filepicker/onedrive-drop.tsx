@@ -11,7 +11,7 @@ import { fetchApi, getOneDriveAuthConfig, logStatus, StatusLogClassification, St
 import { getToken } from './auth'
 import { useMsal } from "@azure/msal-react";
 import { useRef } from "react";
-import { UrlFile } from "./UrlFile";
+import { OneDriveFile } from "./UrlFile";
 
 interface Props {
   folderPath: string;
@@ -368,7 +368,7 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
       const uploadPromises : Promise<File | null>[] = files.map(async (indexedFile: any, index: any) => {
         console.log(indexedFile)
         uploadedFilesCount++;
-        return new UrlFile(indexedFile.file, accessToken);
+        return new OneDriveFile(indexedFile.file, accessToken);
       });
       const uploadedFiles = await Promise.all(uploadPromises);
       const validFiles = uploadedFiles.filter((file): file is File  => file !== null);

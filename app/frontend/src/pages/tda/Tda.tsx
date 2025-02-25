@@ -19,7 +19,7 @@ import CharacterStreamer from '../../components/CharacterStreamer/CharacterStrea
 import { GetFeatureFlagsResponse, getFeatureFlags } from '../../api';
 import { OneDriveDrop } from '../../components/filepicker/onedrive-drop';
 import Switch from 'react-switch';
-import { UrlFile } from '../../components/filepicker/UrlFile';
+import { OneDriveFile } from '../../components/filepicker/UrlFile';
 
 interface Props {
   folderPath: string;
@@ -205,9 +205,9 @@ const fetchImages = async () => {
       files.forEach(async (indexedFile: any) => {  
           var file = indexedFile.file as File;
 
-          if( file instanceof UrlFile)
+          if( file instanceof OneDriveFile)
           {
-            var urlfile =  file as UrlFile
+            var urlfile =  file as OneDriveFile
             file = await (urlfile.promiseFile ?? urlfile.getFile())
           }
           console.log('MAX_CSV_FILE_SIZE:', MAX_CSV_FILE_SIZE);

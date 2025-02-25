@@ -1,4 +1,4 @@
-export class UrlFile implements File, Blob
+export class OneDriveFile implements File, Blob
 {
     lastModified: number = Date.now();
     name: string;
