@@ -142,7 +142,7 @@ const Content = () => {
                             {isLocalFileSelection && <FilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                             {!isLocalFileSelection && <OneDriveFilePicker folderPath={selectedKey || ""} tags={selectedTags || []} />}
                         </div>
-                        <span className={styles.EmptyObjectivesListItemText}>After they have been uploaded, files may not be avaliable to the LLM for a few minutes while they are processed</span>
+                        <span className={styles.contentUploadDisclaimer}>Once uploaded, files may take a few minutes to process before they are available to the LLM. The upload creates a copy, and after 24 hours, you will need to upload the file again. To check the status, visit the Upload Status page.</span>
                     </div>
                 </PivotItem>
                 <PivotItem headerText="Upload Status" aria-label="Upload Status Tab">

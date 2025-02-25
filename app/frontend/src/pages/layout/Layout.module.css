@@ -12,8 +12,6 @@
     width: 50%; /* Adjust as needed */
 }
 .layout {
-    display: flex;
-    flex-direction: column;
     height: 100%;
     background-color: #fff;
 }
@@ -115,23 +113,17 @@
 
 .contentContainer
 {
-    height: calc(100vh - 195px);
-    overflow-y: auto;
+    min-height: calc(100vh - 345px);
     display: flex;
     flex-direction: column;
-   
-
     background-image: url('../../assets/app-logo-medium.png');
     background-repeat: no-repeat;
-    background-attachment: fixed;
     background-position: right bottom;
 }
 
 .footer {
-    background-color: #005ea2;
+    background-color: #07376e;
     padding: 5px 10px;
-    min-height: 40px;
-    margin-top: 10px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.14), 0px 0px 2px rgba(0, 0, 0, 0.12);
 }
 

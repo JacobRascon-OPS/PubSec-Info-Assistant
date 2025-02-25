@@ -359,7 +359,6 @@ const OneDriveDrop = ({ onChange, accept = ["*"] }: {onChange: any, accept: stri
       }
 
       const uploadPromises : Promise<File | null>[] = files.map(async (indexedFile: any, index: any) => {
-        console.log(indexedFile)
         return new OneDriveFile(indexedFile.file, accessToken);
       });
       const uploadedFiles = await Promise.all(uploadPromises);

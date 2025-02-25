@@ -129,6 +129,9 @@
 .chatRoot {
     flex: 1;
     display: flex;
+    max-height: calc(100vh - 245px);
+    min-height: calc(100vh - 345px);
+    overflow-y: auto;
 }
 
 .chatContainer {

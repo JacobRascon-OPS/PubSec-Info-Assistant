@@ -22,7 +22,7 @@ export class OneDriveFile implements File, Blob
     }
     slice(start?: number, end?: number, contentType?: string): Blob {
         const slicedata: Promise<Blob> = this.arrayBuffer().then((buffer) => {
-            const slicedBuffer = buffer.slice(start, end);
+            const slicedBuffer = buffer.slice(start || 0, end);
             return new Blob([slicedBuffer], { type: contentType });
         });
         console.log("slice")
@@ -70,7 +70,7 @@ export class OneDriveFile implements File, Blob
 
     bytes(): Promise<Uint8Array> { 
         console.log("bytes")
-        return (this.promiseFile ?? this.getFile()).then((file) => file.bytes());
+        return (this.promiseFile ?? this.getFile()).then((file:any) => file.bytes());
     }
     
     text(): Promise<string> { 

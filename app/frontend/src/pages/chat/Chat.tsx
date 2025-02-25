@@ -527,13 +527,18 @@ const Chat = () => {
                         }
                         <TextField className={styles.chatSettingsSeparator} defaultValue={userPersona} label="User Persona" onChange={onUserPersonaChange} />
                         <TextField className={styles.chatSettingsSeparator} defaultValue={systemPersona} label="System Persona" onChange={onSystemPersonaChange} />
-                        {activeChatMode != ChatMode.Ungrounded &&
+                        {
+                            featureFlags?.ENABLE_FILE_FOLDERS || featureFlags?.ENABLE_FILE_TAGS && <>
+                             {activeChatMode != ChatMode.Ungrounded &&
                             <div>
                                 <Separator className={styles.chatSettingsSeparator}>Filter Search Results by</Separator>
-                                <FolderPicker allowFolderCreation={false} onSelectedKeyChange={onSelectedKeyChanged} preSelectedKeys={selectedFolders} />
-                                <TagPickerInline allowNewTags={false} onSelectedTagsChange={onSelectedTagsChange} preSelectedTags={selectedTags} />
+                               {featureFlags?.ENABLE_FILE_FOLDERS && <FolderPicker allowFolderCreation={false} onSelectedKeyChange={onSelectedKeyChanged} preSelectedKeys={selectedFolders} /> }
+                               {featureFlags?.ENABLE_FILE_TAGS && <TagPickerInline allowNewTags={false} onSelectedTagsChange={onSelectedTagsChange} preSelectedTags={selectedTags} /> }
                             </div>
                         }
+                            </>
+                        }
+                       
                     </Panel>
 
                     <Panel
