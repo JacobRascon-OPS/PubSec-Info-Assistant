@@ -93,9 +93,9 @@ const CharacterStreamer = ({ eventSource, nonEventString, onStreamingComplete, c
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [isLoading]);
 
-  useEffect(() => {
-      chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" });
-    }, [output]);
+  // useEffect(() => {
+  //     chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" });
+  //   }, [output]);
 
   useEffect(() => {
     if (!eventSource && nonEventString) {
