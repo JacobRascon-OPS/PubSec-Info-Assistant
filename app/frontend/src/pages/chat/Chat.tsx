@@ -269,7 +269,16 @@ const Chat = () => {
     }
 
     useEffect(() => { fetchFeatureFlags() }, []);
-    useEffect(() => chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" }), [isLoading]);
+    useEffect(() =>
+        {
+            if (chatMessageStreamEnd.current) {
+                chatMessageStreamEnd.current.scrollTop = chatMessageStreamEnd.current.scrollHeight;
+              }
+
+              //chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth", block: 'nearest', inline: 'start' })
+          
+        } 
+        , [isLoading]);
 
     const onRetrieveCountChange = (_ev?: React.SyntheticEvent<HTMLElement, Event>, newValue?: string) => {
         setRetrieveCount(parseInt(newValue || "5"));
@@ -408,46 +417,47 @@ const Chat = () => {
                                 }
                             </div>
                         ) : (
-                            <div className={styles.chatMessageStream}>
-                                {answers.map((answer, index) => (
-                                    <div key={index}>
-                                        <UserChatMessage
-                                            message={answer[0]}
-                                            approach={answer[1].approach}
-                                        />
-                                        <div className={styles.chatMessageGpt}>
-                                            <Answer
-                                                key={index}
-                                                answer={answer[1]}
-                                                answerStream={answerStream}
-                                                setError={(error) => { setError(error); removeAnswerAtIndex(index); }}
-                                                setAnswer={(response) => updateAnswerAtIndex(index, response)}
-                                                isSelected={selectedAnswer === index && activeAnalysisPanelTab !== undefined}
-                                                onCitationClicked={(c, s, p) => onShowCitation(c, s, p, index)}
-                                                onThoughtProcessClicked={() => onToggleTab(AnalysisPanelTabs.ThoughtProcessTab, index)}
-                                                onSupportingContentClicked={() => onToggleTab(AnalysisPanelTabs.SupportingContentTab, index)}
-                                                onFollowupQuestionClicked={q => makeApiRequest(q, answer[1].approach, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
-                                                showFollowupQuestions={useSuggestFollowupQuestions && answers.length - 1 === index}
-                                                onAdjustClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)}
-                                                onRegenerateClick={() => makeApiRequest(answers[index][0], answer[1].approach, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
-                                                onWebSearchClicked={() => makeApiRequest(answers[index][0], Approaches.ChatWebRetrieveRead, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
-                                                onWebCompareClicked={() => makeApiRequest(answers[index][0], Approaches.CompareWorkWithWeb, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
-                                                onRagCompareClicked={() => makeApiRequest(answers[index][0], Approaches.CompareWebWithWork, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
-                                                onRagSearchClicked={() => makeApiRequest(answers[index][0], Approaches.ReadRetrieveRead, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
-                                                chatMode={activeChatMode}
+                            <div className={styles.chatMessageStream} ref={chatMessageStreamEnd}>
+                                    {answers.map((answer, index) => (
+                                        <div key={index}>
+                                            <UserChatMessage
+                                                message={answer[0]}
+                                                approach={answer[1].approach}
                                             />
+                                            <div className={styles.chatMessageGpt}>
+                                                <Answer
+                                                    key={index}
+                                                    answer={answer[1]}
+                                                    answerStream={answerStream}
+                                                    setError={(error) => { setError(error); removeAnswerAtIndex(index); }}
+                                                    setAnswer={(response) => updateAnswerAtIndex(index, response)}
+                                                    isSelected={selectedAnswer === index && activeAnalysisPanelTab !== undefined}
+                                                    onCitationClicked={(c, s, p) => onShowCitation(c, s, p, index)}
+                                                    onThoughtProcessClicked={() => onToggleTab(AnalysisPanelTabs.ThoughtProcessTab, index)}
+                                                    onSupportingContentClicked={() => onToggleTab(AnalysisPanelTabs.SupportingContentTab, index)}
+                                                    onFollowupQuestionClicked={q => makeApiRequest(q, answer[1].approach, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
+                                                    showFollowupQuestions={useSuggestFollowupQuestions && answers.length - 1 === index}
+                                                    onAdjustClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)}
+                                                    onRegenerateClick={() => makeApiRequest(answers[index][0], answer[1].approach, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
+                                                    onWebSearchClicked={() => makeApiRequest(answers[index][0], Approaches.ChatWebRetrieveRead, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
+                                                    onWebCompareClicked={() => makeApiRequest(answers[index][0], Approaches.CompareWorkWithWeb, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
+                                                    onRagCompareClicked={() => makeApiRequest(answers[index][0], Approaches.CompareWebWithWork, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
+                                                    onRagSearchClicked={() => makeApiRequest(answers[index][0], Approaches.ReadRetrieveRead, answer[1].work_citation_lookup, answer[1].web_citation_lookup, answer[1].thought_chain)}
+                                                    chatMode={activeChatMode}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                                {error ? (
-                                    <>
-                                        <UserChatMessage message={lastQuestionRef.current} approach={activeApproach} />
-                                        <div className={styles.chatMessageGptMinWidth}>
-                                            <AnswerError error={error.toString()} onRetry={() => makeApiRequest(lastQuestionRef.current, activeApproach, lastQuestionWorkCitationRef.current, lastQuestionWebCitiationRef.current, lastQuestionThoughtChainRef.current)} />
-                                        </div>
-                                    </>
-                                ) : null}
-                                <div ref={chatMessageStreamEnd} />
+                                    ))}
+                                    {error ? (
+                                        <>
+                                            <UserChatMessage message={lastQuestionRef.current} approach={activeApproach} />
+                                            <div className={styles.chatMessageGptMinWidth}>
+                                                <AnswerError error={error.toString()} onRetry={() => makeApiRequest(lastQuestionRef.current, activeApproach, lastQuestionWorkCitationRef.current, lastQuestionWebCitiationRef.current, lastQuestionThoughtChainRef.current)} />
+                                            </div>
+                                        </>
+                                    ) : null}
+                                {/* <div ref={chatMessageStreamEnd} /> */}
+                                {/* <AlwaysScrollToBottom /> */}
                             </div>
                         )}
 
@@ -529,16 +539,16 @@ const Chat = () => {
                         <TextField className={styles.chatSettingsSeparator} defaultValue={systemPersona} label="System Persona" onChange={onSystemPersonaChange} />
                         {
                             featureFlags?.ENABLE_FILE_FOLDERS || featureFlags?.ENABLE_FILE_TAGS && <>
-                             {activeChatMode != ChatMode.Ungrounded &&
-                            <div>
-                                <Separator className={styles.chatSettingsSeparator}>Filter Search Results by</Separator>
-                               {featureFlags?.ENABLE_FILE_FOLDERS && <FolderPicker allowFolderCreation={false} onSelectedKeyChange={onSelectedKeyChanged} preSelectedKeys={selectedFolders} /> }
-                               {featureFlags?.ENABLE_FILE_TAGS && <TagPickerInline allowNewTags={false} onSelectedTagsChange={onSelectedTagsChange} preSelectedTags={selectedTags} /> }
-                            </div>
-                        }
+                                {activeChatMode != ChatMode.Ungrounded &&
+                                    <div>
+                                        <Separator className={styles.chatSettingsSeparator}>Filter Search Results by</Separator>
+                                        {featureFlags?.ENABLE_FILE_FOLDERS && <FolderPicker allowFolderCreation={false} onSelectedKeyChange={onSelectedKeyChanged} preSelectedKeys={selectedFolders} />}
+                                        {featureFlags?.ENABLE_FILE_TAGS && <TagPickerInline allowNewTags={false} onSelectedTagsChange={onSelectedTagsChange} preSelectedTags={selectedTags} />}
+                                    </div>
+                                }
                             </>
                         }
-                       
+                        
                     </Panel>
 
                     <Panel
