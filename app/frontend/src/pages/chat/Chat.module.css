@@ -19,8 +19,8 @@
 .chatRoot {
     flex: 1;
     display: flex;
-    max-height: calc(100vh - 300px);
-    min-height: calc(100vh - 345px);
+    max-height: calc(100vh - 305px);
+    min-height: calc(100vh - 305px);
     overflow-y: auto;
 }
 

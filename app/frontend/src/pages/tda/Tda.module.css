@@ -126,14 +126,6 @@
     margin-top: 20px;
 }
 
-.chatRoot {
-    flex: 1;
-    display: flex;
-    max-height: calc(100vh - 300px);
-    min-height: calc(100vh - 345px);
-    overflow-y: auto;
-}
-
 .chatContainer {
     flex: 1;
     display: flex;
