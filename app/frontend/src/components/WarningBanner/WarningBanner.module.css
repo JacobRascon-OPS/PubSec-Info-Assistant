@@ -3,11 +3,14 @@
 
 .warningBanner {
     /* background-color: #4CAF50; Green color */
-    color: #ffffff;  /*White color */
+    background-color: #005ea2;  /*White color */
+    color: white;
     padding: 0px; /* Adjust the padding as needed */
     text-align: center; /* Center the text */
     font-weight: 500;
     font-style: italic;
+    padding: 10px;
+    margin-top: 10px;
 }
 
 

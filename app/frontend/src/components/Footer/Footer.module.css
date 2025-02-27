@@ -1,0 +1,49 @@
+.row
+{
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    width: 75%;
+    color: white;
+    padding: 15px;
+}
+
+.column
+{
+    flex-basis: 100%;
+}
+
+.footerItemList
+{
+    list-style: none;
+    padding: 0px;
+    padding-top: 10px;
+}
+
+.footerItemList li
+{
+    padding-bottom: 10px;
+}
+
+.footerItemList li a
+{
+    color: white;
+    text-decoration: none;
+}
+
+.footerItemList li a:hover
+{
+    color: white;
+    text-decoration: none;
+}
+
+.footerListHeader
+{
+    color: #22c58e;
+}
+
+.socalMediaLinks
+{
+    display: flex;
+    gap: 15px;
+}

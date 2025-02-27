@@ -9,6 +9,7 @@ import { Title } from "../../components/Title/Title";
 import { getFeatureFlags, GetFeatureFlagsResponse } from "../../api";
 import { useEffect, useState } from "react";
 import { ChatMultiple32Regular, ContentSettings32Regular, MathFormatProfessionalRegular, TableSearchRegular } from "@fluentui/react-icons";
+import Footer from "../../components/Footer/Footer";
 
 export const Layout = () => {
     const [featureFlags, setFeatureFlags] = useState<GetFeatureFlagsResponse | null>(null);
@@ -82,8 +83,9 @@ export const Layout = () => {
             <div className={styles.contentContainer}>
                 <Outlet />
             </div>
+            <WarningBanner />
             <footer className={styles.footer}>
-                <WarningBanner />
+                <Footer />
             </footer>
         </div>
     );

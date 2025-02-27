@@ -96,11 +96,6 @@ h2 {
     margin-top: 20px;
 }
 
-.chatRoot {
-    flex: 1;
-    display: flex;
-}
-
 .chatContainer {
     flex: 1;
     display: flex;

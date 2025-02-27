@@ -200,7 +200,6 @@ const fetchImages = async () => {
     try {
       setFile(null);
       const data = new FormData();
-      console.log("files", files);
       setUploadStarted(true);
       files.forEach(async (indexedFile: any) => {  
           var file = indexedFile.file as File;
@@ -216,7 +215,6 @@ const fetchImages = async () => {
             setUploadStarted(false);
             return;
             }
-            console.log('parse file', file)
             Papa.parse(file, {
               header: true,
               dynamicTyping: true,
@@ -359,7 +357,7 @@ const handleCloseEvent = () => {
     <div className={styles.wrapper}>
       
       {/* canvas */}
-      {((featureFlags?.ENABLE_LOCAL_FILES ?? false)) && (
+      {featureFlags?.ENABLE_LOCAL_FILES  && (
         <div className={styles.FileSelector}>
           <span>Would you like to upload local files? </span>
           <Switch height={20} onChange={handleToggle} checked={isLocalFileSelection} uncheckedIcon={true} checkedIcon={true} onColor="#005ea2" offColor="#CCCCC" />
