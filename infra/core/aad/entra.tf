@@ -23,7 +23,7 @@ resource "azuread_application" "aad_web_app" {
   }
 
   single_page_application {
-    redirect_uris = ["https://app-infoasst-${var.randomString}.${var.azure_websites_domain}"]
+    redirect_uris = ["https://app-infoasst-${var.randomString}.${var.azure_websites_domain}/"]
   }
 }
 
